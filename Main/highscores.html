@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>High Scores - 12COMP Game Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>High Scores Leaderboard</h1>
+    <p>Top players across all games:</p>
+
+    <table id="highscores-table" border="1" style="width: 100%; text-align: center;">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Game</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Scores will be injected here -->
+      </tbody>
+    </table>
+
+    <br/>
+    <a href="index.html">Back to Home</a>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
+      authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
+      databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
+      projectId: "comp-2025-carmen-o-grady",
+      storageBucket: "comp-2025-carmen-o-grady.appspot.com",
+      messagingSenderId: "1046417795904",
+      appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
+      measurementId: "G-BGRNW3X6K8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Check login status
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loadHighscores();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Load highscores from Firebase Realtime DB
+    function loadHighscores() {
+      // Assuming your scores are stored under "scores" path
+      // Structure example:
+      // scores: {
+      //   scoreId1: { userId, gameName, score, timestamp }
+      //   scoreId2: { ... }
+      // }
+
+      const scoresRef = db.ref("scores");
+      scoresRef.orderByChild("score").limitToLast(50).once("value", snapshot => {
+        const scoresTableBody = document.querySelector("#highscores-table tbody");
+        scoresTableBody.innerHTML = ""; // Clear previous
+
+        let scores = [];
+        snapshot.forEach(childSnap => {
+          scores.push(childSnap.val());
+        });
+
+        // Sort descending (highest first)
+        scores.sort((a, b) => b.score - a.score);
+
+        scores.forEach(scoreEntry => {
+          // You might want to get user displayName from 'users' if you only have userId here.
+          // For simplicity, assume displayName saved in scoreEntry or expand logic here.
+
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td>${scoreEntry.displayName || "Anonymous"}</td>
+            <td>${scoreEntry.gameName}</td>
+            <td>${scoreEntry.score}</td>
+          `;
+          scoresTableBody.appendChild(tr);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

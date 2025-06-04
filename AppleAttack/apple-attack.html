@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Mio's Game Project</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="12COMP P5.play">
+  <meta name="keywords" content="12COMP, P5.play">
+  <meta name="author" content="Mio Hoffman">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- P5.js & P5.play *****************************-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.js" integrity="sha512-bzpp8klYroR6PFgL3RJ+VkvY5hJna7Zd38OA56peUDHSNQpSiN9lDQVnMYtcw7hoAVhbR6mAOdH+ymzg1o+G0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://p5play.org/v3/planck.min.js"></script>
+  <script src="https://p5play.org/v3/p5play.js"></script>
+  <script src="main.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="firebase-utils.js"></script>
+  
+</head>
+
+<!--***************************************************
+  BODY
+****************************************************-->
+<body>
+    <h1 id = "title">APPLE ATTACK</h1>
+    <button id = "start" onclick = "runGame()">START</button>
+    <button id = "instructions" onclick="location.href='instructions.html'">Instructions</button>
+
+    <script>
+   function gameOver() {
+    const playerScore = calculateFinalScore();
+    writeScore("Apple Attack", playerScore);
+  }
+</script>
+</body>
+</html>
+<!--***************************************************
+  END OF INDEX.HTML
+****************************************************-->

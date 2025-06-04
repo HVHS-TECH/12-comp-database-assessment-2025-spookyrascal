@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>12COMP Game Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>12COMP Game Portal</h1>
+
+    <div id="login-section">
+      <button onclick="login()">Login with Google</button>
+    </div>
+
+    <div id="user-section" style="display: none;">
+      <p>Hello, <span id="username"></span> 👋</p>
+      <button onclick="logout()">Logout</button>
+
+      <div id="nav-buttons">
+        <a href="register.html"><button>Register Info</button></a>
+        <a href="select.html"><button>Choose Game</button></a>
+        <a href="highscores.html"><button>View High Scores</button></a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
+      authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
+      databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
+      projectId: "comp-2025-carmen-o-grady",
+      storageBucket: "comp-2025-carmen-o-grady.appspot.com",
+      messagingSenderId: "1046417795904",
+      appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
+      measurementId: "G-BGRNW3X6K8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Login with Google
+    function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(error => alert(error.message));
+    }
+
+    // Logout function
+    function logout() {
+      auth.signOut().catch(error => alert(error.message));
+    }
+
+    // Listen for auth state changes
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Hide login, show user info
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("user-section").style.display = "block";
+        document.getElementById("username").textContent = user.displayName;
+
+        // Save user data to Firebase DB
+        db.ref("users/" + user.uid).update({
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL
+        });
+      } else {
+        // Show login, hide user info
+        document.getElementById("login-section").style.display = "block";
+        document.getElementById("user-section").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

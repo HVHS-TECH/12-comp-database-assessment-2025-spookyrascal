@@ -1,0 +1,133 @@
+/* style.css */
+
+body {
+  background: #121212; /* Dark mode vibes */
+  color: #eee;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  align-items: center;
+}
+
+.container {
+  max-width: 900px;
+  width: 90%;
+  background: #1f1f1f;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 180, 0.3);
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #00ffb3;
+  text-shadow: 0 0 8px #00ffb3;
+}
+
+p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #a0a0a0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+  background: #272727;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px #00ffb3;
+}
+
+thead tr {
+  background: #00ffb3;
+  color: #121212;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+thead th, tbody td {
+  padding: 15px 12px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #333;
+  transition: background 0.3s ease;
+  cursor: default;
+}
+
+tbody tr:nth-child(even) {
+  background: #1a1a1a;
+}
+
+tbody tr:hover {
+  background: #00ffb3;
+  color: #121212;
+  font-weight: 700;
+}
+
+a {
+  color: #00ffb3;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #00cca0;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  table thead {
+    display: none; /* Hide header on tiny screens for simpler view */
+  }
+
+  table, tbody, tr, td {
+    display: block;
+    width: 100%;
+  }
+
+  tbody tr {
+    margin-bottom: 15px;
+    background: #272727;
+    border-radius: 10px;
+    padding: 15px;
+  }
+
+  tbody td {
+    padding: 10px 15px;
+    text-align: right;
+    position: relative;
+    font-size: 1rem;
+    border-bottom: 1px solid #444;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #00ffb3;
+    text-align: left;
+  }
+
+  tbody td:last-child {
+    border-bottom: 0;
+  }
+}

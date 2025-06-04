@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register Info - 12COMP Game Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Register Your Info</h1>
+    <form id="register-form">
+      <label for="gameName">Game Name:</label><br />
+      <input type="text" id="gameName" name="gameName" required minlength="3" /><br /><br />
+
+      <label for="age">Age:</label><br />
+      <input type="number" id="age" name="age" required min="5" max="120" /><br /><br />
+
+      <button type="submit">Save Info</button>
+    </form>
+
+    <p id="message"></p>
+    <a href="index.html">Back to Home</a>
+  </div>
+
+  <script>
+    // Your Firebase config (use the same config as index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
+      authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
+      databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
+      projectId: "comp-2025-carmen-o-grady",
+      storageBucket: "comp-2025-carmen-o-grady.appspot.com",
+      messagingSenderId: "1046417795904",
+      appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
+      measurementId: "G-BGRNW3X6K8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Check if user is logged in; otherwise redirect to index
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Form submit handler
+    document.getElementById("register-form").addEventListener("submit", e => {
+      e.preventDefault();
+
+      const gameName = document.getElementById("gameName").value.trim();
+      const age = parseInt(document.getElementById("age").value);
+
+      if (!gameName || age < 5 || age > 120) {
+        displayMessage("Please enter a valid game name and age between 5 and 120.", "red");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (user) {
+        // Save data under users/userid/registrationInfo
+        db.ref(`users/${user.uid}/registrationInfo`).set({
+          gameName: gameName,
+          age: age
+        }).then(() => {
+          displayMessage("Registration info saved! 🎉", "green");
+          // Optionally clear the form:
+          // document.getElementById("register-form").reset();
+        }).catch(error => {
+          displayMessage("Error saving data: " + error.message, "red");
+        });
+      } else {
+        displayMessage("You must be logged in to register.", "red");
+      }
+    });
+
+    function displayMessage(msg, color) {
+      const messageElem = document.getElementById("message");
+      messageElem.textContent = msg;
+      messageElem.style.color = color || "black";
+    }
+  </script>
+</body>
+</html>
