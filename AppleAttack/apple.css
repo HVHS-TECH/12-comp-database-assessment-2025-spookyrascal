@@ -1,0 +1,26 @@
+h1{
+    text-align: center;
+    font-size: 150px;
+    color:crimson;
+    border-bottom: 10px solid rgb(161, 10, 10);
+}
+
+body{
+    background-color: bisque;
+}
+
+button{
+    color: white;
+    background-color: burlywood;
+    margin-left: 44%;
+    margin-top: 50px;
+    font-size: 70px;
+    border: 5px solid darkgoldenrod
+}
+
+p{
+    text-align: center;
+    font-family: verdana;
+    font-size: 20px;
+    color:indianred;
+}

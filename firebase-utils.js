@@ -1,13 +1,14 @@
 // firebase-utils.js (make sure this file is included in both game HTML files)
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DB_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
+  authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
+  databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
+  projectId: "comp-2025-carmen-o-grady",
+  storageBucket: "comp-2025-carmen-o-grady.firebasestorage.app",
+  messagingSenderId: "1046417795904",
+  appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
+  measurementId: "G-BGRNW3X6K8"
 };
 
 firebase.initializeApp(firebaseConfig);
