@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>12COMP Game Portal</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Firebase -->
@@ -19,19 +19,59 @@
     </div>
 
     <div id="user-section" style="display: none;">
-      <p>Hello, <span id="username"></span> 👋</p>
+      <p>Hello, <span id="username"></span> </p>
       <button onclick="logout()">Logout</button>
 
       <div id="nav-buttons">
-        <a href="register.html"><button>Register Info</button></a>
-        <a href="select.html"><button>Choose Game</button></a>
-        <a href="highscores.html"><button>View High Scores</button></a>
+        <button onclick="showSection('register')">Register Info</button>
+        <button onclick="showSection('select')">Choose Game</button>
+        <button onclick="showSection('leaderboard')">Leaderboard</button>
+        <button onclick="showSection('highscores')">High Scores</button>
       </div>
+    </div>
+
+    <div id="register" class="section" style="display:none;">
+      <h2>Register Your Info</h2>
+      <form id="register-form">
+        <label for="gameName">Game Name:</label><br />
+        <input type="text" id="gameName" name="gameName" required minlength="3" /><br /><br />
+
+        <label for="age">Age:</label><br />
+        <input type="number" id="age" name="age" required min="5" max="120" /><br /><br />
+
+        <button type="submit">Save Info</button>
+      </form>
+      <p id="message"></p>
+    </div>
+
+    <div id="select" class="section" style="display:none;">
+      <h2>Choose Your Game</h2>
+      <p>Hello, <span id="username-select"></span>! Pick a game to play:</p>
+      <button onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
+      <button onclick="goToGame('AppleAttack/index.html')">Apple Attack</button>
+    </div>
+
+    <div id="leaderboard" class="section" style="display:none;">
+      <h2>Leaderboard</h2>
+      <table id="leaderboard-table">
+        <thead>
+          <tr><th>Player</th><th>Game</th><th>Score</th></tr>
+        </thead>
+        <tbody id="scores-body"></tbody>
+      </table>
+    </div>
+
+    <div id="highscores" class="section" style="display:none;">
+      <h2>High Scores Leaderboard</h2>
+      <p>Top players across all games:</p>
+      <table id="highscores-table" border="1" style="width: 100%; text-align: center;">
+        <thead><tr><th>Player</th><th>Game</th><th>Score</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 
   <script>
-    // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
       authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
@@ -42,43 +82,97 @@
       appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
       measurementId: "G-BGRNW3X6K8"
     };
-
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Login with Google
     function login() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(error => alert(error.message));
     }
 
-    // Logout function
     function logout() {
       auth.signOut().catch(error => alert(error.message));
     }
 
-    // Listen for auth state changes
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(div => div.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function goToGame(path) {
+      window.location.href = path;
+    }
+
     auth.onAuthStateChanged(user => {
       if (user) {
-        // Hide login, show user info
         document.getElementById("login-section").style.display = "none";
         document.getElementById("user-section").style.display = "block";
         document.getElementById("username").textContent = user.displayName;
-
-        // Save user data to Firebase DB
+        document.getElementById("username-select").textContent = user.displayName;
         db.ref("users/" + user.uid).update({
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL
         });
+        loadScores();
+        loadHighscores();
       } else {
-        // Show login, hide user info
         document.getElementById("login-section").style.display = "block";
         document.getElementById("user-section").style.display = "none";
       }
     });
+
+    document.getElementById("register-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const gameName = document.getElementById("gameName").value.trim();
+      const age = parseInt(document.getElementById("age").value);
+      const user = auth.currentUser;
+      if (user && gameName && age >= 5 && age <= 120) {
+        db.ref(`users/${user.uid}/registrationInfo`).set({ gameName, age })
+          .then(() => displayMessage("Registration info saved! 🎉", "green"))
+          .catch(error => displayMessage("Error saving data: " + error.message, "red"));
+      } else {
+        displayMessage("Invalid input or not logged in.", "red");
+      }
+    });
+
+    function displayMessage(msg, color) {
+      const messageElem = document.getElementById("message");
+      messageElem.textContent = msg;
+      messageElem.style.color = color || "black";
+    }
+
+    function loadScores() {
+      db.ref('scores').once('value').then(snapshot => {
+        const scoresBody = document.getElementById('scores-body');
+        scoresBody.innerHTML = '';
+        const scores = [];
+        snapshot.forEach(childSnap => {
+          const entry = childSnap.val();
+          if (entry && typeof entry.score === 'number') scores.push(entry);
+        });
+        scores.sort((a, b) => b.score - a.score).slice(0, 50).forEach(entry => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${entry.displayName || 'Anonymous'}</td><td>${entry.gameName || 'Unknown'}</td><td>${entry.score}</td>`;
+          scoresBody.appendChild(tr);
+        });
+      });
+    }
+
+    function loadHighscores() {
+      db.ref("scores").orderByChild("score").limitToLast(50).once("value", snapshot => {
+        const highscoresTableBody = document.querySelector("#highscores-table tbody");
+        highscoresTableBody.innerHTML = "";
+        let scores = [];
+        snapshot.forEach(childSnap => scores.push(childSnap.val()));
+        scores.sort((a, b) => b.score - a.score).forEach(scoreEntry => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${scoreEntry.displayName || "Anonymous"}</td><td>${scoreEntry.gameName}</td><td>${scoreEntry.score}</td>`;
+          highscoresTableBody.appendChild(tr);
+        });
+      });
+    }
   </script>
 </body>
 </html>
