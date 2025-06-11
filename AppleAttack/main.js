@@ -526,3 +526,33 @@ function walls(){
     wallTop.color = 'brown';
     wallBot.color = 'brown';
 }
+
+function submitScore(name, gameName, score) {
+  const user = firebase.auth().currentUser;
+
+  if (!user) {
+    alert("You must be logged in to submit a score!");
+    return;
+  }
+
+  if (typeof score !== "number" || score < 0) {
+    alert("Invalid score!");
+    return;
+  }
+
+  const scoreData = {
+    name: name || "Anonymous",
+    gameName: gameName || "Unknown Game",
+    score: score,
+    timestamp: Date.now(),
+  };
+
+  // Push a new score entry under the user ID
+  firebase.database().ref(`Scores/${user.uid}`).push(scoreData)
+    .then(() => {
+      alert(`Score of ${score} submitted! 🏆`);
+    })
+    .catch((error) => {
+      alert("Error submitting score: " + error.message);
+    });
+}

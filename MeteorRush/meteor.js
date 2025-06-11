@@ -29,7 +29,7 @@ const meteorImg = new Image();
 const earthImg = new Image();
 playerImg.src = 'assets/images/meteor.jpeg';
 meteorImg.src = 'assets/images/spacerock.jpeg';
-earthImg.src = 'assets/mages/earth.jpeg';
+earthImg.src = 'assets/images/earth.jpeg';
 
 // Start game
 startBtn.onclick = () => {
@@ -162,6 +162,37 @@ function endGame(won) {
   finalScore.textContent = `Your Score: ${score}`;
   gameOverScreen.style.display = 'block';
 }
+
+function submitScore(name, gameName, score) {
+  const user = firebase.auth().currentUser;
+
+  if (!user) {
+    alert("You must be logged in to submit a score!");
+    return;
+  }
+
+  if (typeof score !== "number" || score < 0) {
+    alert("Invalid score!");
+    return;
+  }
+
+  const scoreData = {
+    name: name || "Anonymous",
+    gameName: gameName || "Unknown Game",
+    score: score,
+    timestamp: Date.now(),
+  };
+
+  // Push a new score entry under the user ID
+  firebase.database().ref(`Scores/${user.uid}`).push(scoreData)
+    .then(() => {
+      alert(`Score of ${score} submitted! 🏆`);
+    })
+    .catch((error) => {
+      alert("Error submitting score: " + error.message);
+    });
+}
+
 
 
 

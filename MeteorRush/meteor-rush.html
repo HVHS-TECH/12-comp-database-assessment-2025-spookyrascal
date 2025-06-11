@@ -5,17 +5,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
-    authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
-    databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
-    projectId: "comp-2025-carmen-o-grady",
-    storageBucket: "comp-2025-carmen-o-grady.appspot.com",
-    messagingSenderId: "1046417795904",
-    appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
-    measurementId: "G-BGRNW3X6K8"
-  };
-
+  const firebaseConfig = 
   firebase.initializeApp(firebaseConfig);
 </script>
   <meta charset="UTF-8" />
@@ -62,7 +52,6 @@
     function gameOver(won) {
       gameRunning = false; // Stop the game
 
-      // Hide the game canvas and start screen
       document.getElementById('gameCanvas').style.display = 'none';
       document.querySelector('.start-screen').style.display = 'none';
 
