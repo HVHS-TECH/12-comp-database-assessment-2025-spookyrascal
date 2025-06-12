@@ -1,4 +1,4 @@
-// 🎮 Grab everything we need from the page
+""// 🎮 Grab everything we need from the page
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const startBtn = document.querySelector('.start-btn');
@@ -7,17 +7,15 @@ const instructionsModal = document.getElementById('instructions-modal');
 const closeBtn = document.querySelector('.close-btn');
 const startScreen = document.querySelector('.start-screen');
 const pauseOverlay = document.querySelector('.pause-overlay');
-
-// Game over screen DOM
 const gameOverScreen = document.getElementById('game-over-screen');
 const gameOverMessage = document.getElementById('game-over-message');
 const finalScore = document.getElementById('final-score');
 
-// 🎮 Set up game values and objects
+// 🎮 Game state variables
 let gameRunning = false;
 let paused = false;
 let player = { x: 50, y: 100, w: 50, h: 50, speed: 5, dy: 0 };
-let obstacles = []; 
+let obstacles = [];
 let score = 0;
 let lives = 3;
 let earth = { show: false, x: 0 };
@@ -31,7 +29,6 @@ playerImg.src = 'assets/images/meteor.jpeg';
 meteorImg.src = 'assets/images/spacerock.jpeg';
 earthImg.src = 'assets/images/earth.jpeg';
 
-// Start game
 startBtn.onclick = () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -52,11 +49,9 @@ startBtn.onclick = () => {
   loop();
 };
 
-// Instructions popup
 instructionsBtn.onclick = () => instructionsModal.style.display = 'flex';
 closeBtn.onclick = () => instructionsModal.style.display = 'none';
 
-// Controls
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp') player.dy = -player.speed;
   if (e.key === 'ArrowDown') player.dy = player.speed;
@@ -67,7 +62,6 @@ document.addEventListener('keyup', e => {
   if (e.key === 'ArrowUp' || e.key === 'ArrowDown') player.dy = 0;
 });
 
-// Pause toggle
 function togglePause() {
   if (!gameRunning) return;
   paused = !paused;
@@ -75,7 +69,6 @@ function togglePause() {
   if (!paused) loop();
 }
 
-// Main loop
 function loop() {
   if (!gameRunning || paused) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -102,7 +95,6 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// Obstacles
 function handleObstacles() {
   if (Math.random() < 0.02) {
     let size = 30 + Math.random() * 40;
@@ -144,7 +136,6 @@ function handleObstacles() {
   });
 }
 
-// Score/lives display
 function drawText() {
   ctx.font = '30px Arial';
   ctx.fillStyle = 'white';
@@ -152,7 +143,6 @@ function drawText() {
   ctx.fillText(`Lives: ${lives}`, canvas.width - 150, 40);
 }
 
-// ✨ End game and show overlay
 function endGame(won) {
   gameRunning = false;
   paused = false;
@@ -161,38 +151,21 @@ function endGame(won) {
   gameOverMessage.textContent = won ? '🌍 You reached Earth!' : '💥 Game Over!';
   finalScore.textContent = `Your Score: ${score}`;
   gameOverScreen.style.display = 'block';
-}
 
-function submitScore(name, gameName, score) {
-  const user = firebase.auth().currentUser;
+  if (firebase.auth().currentUser) {
+    const gameName = document.getElementById('gameName')?.value || 'UnknownGame';
+    const scoreData = {
+      name: firebase.auth().currentUser.displayName || "Anonymous",
+      gameName: gameName,
+      score: score,
+      timestamp: Date.now()
+    };
 
-  if (!user) {
-    alert("You must be logged in to submit a score!");
-    return;
+    firebase.database().ref('Scores/' + firebase.auth().currentUser.uid).push(scoreData)
+      .then(() => console.log("✅ Score saved to Firebase."))
+      .catch(err => console.error("❌ Failed to save score:", err));
   }
-
-  if (typeof score !== "number" || score < 0) {
-    alert("Invalid score!");
-    return;
-  }
-
-  const scoreData = {
-    name: name || "Anonymous",
-    gameName: gameName || "Unknown Game",
-    score: score,
-    timestamp: Date.now(),
-  };
-
-  // Push a new score entry under the user ID
-  firebase.database().ref(`Scores/${user.uid}`).push(scoreData)
-    .then(() => {
-      alert(`Score of ${score} submitted! 🏆`);
-    })
-    .catch((error) => {
-      alert("Error submitting score: " + error.message);
-    });
 }
-
 
 
 

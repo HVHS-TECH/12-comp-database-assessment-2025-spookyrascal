@@ -1,69 +1,54 @@
-// --- Firebase config ---
-const firebaseConfig = {
-  apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
-  authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
-  databaseURL: "https://comp-2025-carmen-o-grady-default-rtdb.firebaseio.com",
-  projectId: "comp-2025-carmen-o-grady",
-  storageBucket: "comp-2025-carmen-o-grady.appspot.com",
-  messagingSenderId: "1046417795904",
-  appId: "1:1046417795904:web:25cff308e04c73eb5968a5",
-  measurementId: "G-BGRNW3X6K8"
-};
-
-// --- Firebase init ---
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-
 // --- Google Login ---
-const googleLoginBtn = document.getElementById('google-login-btn');
-const loginMessage = document.getElementById('login-message');
-
 if (googleLoginBtn) {
   googleLoginBtn.addEventListener('click', () => {
+    console.log("[Login] Google login button clicked");
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
       .then((result) => {
+        console.log("[Login] Login successful:", result.user.displayName || result.user.email);
         loginMessage.textContent = "✅ Logged in as " + (result.user.displayName || result.user.email);
         checkUserRegistration(result.user);
       })
       .catch(error => {
+        console.error("[Login] Login error:", error.message);
         loginMessage.textContent = "❌ " + error.message;
       });
   });
 }
 
-// --- Check if user has registered their details ---
+// --- Check Registration ---
 function checkUserRegistration(user) {
+  console.log("[Check Registration] Checking registration for user:", user.uid);
   const registrationSection = document.getElementById('registration-section');
   const userSection = document.getElementById('user-section');
 
   db.ref(`Games/${user.uid}`).once('value')
     .then(snapshot => {
       if (snapshot.exists()) {
-        // User is already registered
+        console.log("[Check Registration] User is registered");
         registrationSection.style.display = 'none';
         userSection.style.display = 'block';
-        document.getElementById('username').textContent =
-          snapshot.val().selectedGame || user.displayName || user.email;
+        document.getElementById('username').textContent = snapshot.val().selectedGame || user.displayName || user.email;
       } else {
-        // User needs to register
+        console.log("[Check Registration] User not registered, showing registration form");
         registrationSection.style.display = 'block';
         userSection.style.display = 'none';
       }
+    })
+    .catch(err => {
+      console.error("[Check Registration] Error checking registration:", err);
     });
 }
 
-// --- Registration form submit ---
-const registrationForm = document.getElementById('registration-form');
-const registrationError = document.getElementById('registration-error');
-
+// --- Registration Submit ---
 if (registrationForm) {
   registrationForm.addEventListener('submit', e => {
     e.preventDefault();
+    console.log("[Registration] Form submitted");
 
     const user = auth.currentUser;
     if (!user) {
+      console.warn("[Registration] No user logged in");
       registrationError.textContent = "⚠️ Please log in first!";
       return;
     }
@@ -72,6 +57,7 @@ if (registrationForm) {
     const age = document.getElementById('age').value.trim();
 
     if (!gameName || !age) {
+      console.warn("[Registration] Missing fields");
       registrationError.textContent = "⚠️ Please fill all info fields!";
       return;
     }
@@ -86,48 +72,40 @@ if (registrationForm) {
 
     db.ref(`Games/${user.uid}`).set(userData)
       .then(() => {
+        console.log("[Registration] User data saved successfully");
         registrationError.textContent = "";
         document.getElementById('registration-section').style.display = 'none';
         document.getElementById('user-section').style.display = 'block';
         document.getElementById('username').textContent = gameName;
       })
       .catch(err => {
-        console.error("❌ Error saving user data:", err);
+        console.error("[Registration] Error saving user data:", err);
         registrationError.textContent = "❌ Error saving info.";
       });
   });
 }
 
 // --- Logout ---
-const logoutBtn = document.getElementById('logout-btn');
-
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
+    console.log("[Logout] Logout button clicked");
     auth.signOut()
       .then(() => {
+        console.log("[Logout] Logged out successfully");
         loginMessage.textContent = "👋 Logged out successfully!";
         document.getElementById('user-section').style.display = 'none';
         document.getElementById('registration-section').style.display = 'none';
         document.getElementById('login-section').style.display = 'block';
       })
       .catch(err => {
+        console.error("[Logout] Error logging out:", err);
         loginMessage.textContent = "❌ Error logging out.";
-        console.error(err);
       });
   });
 }
 
-// --- Game Navigation Function with localStorage ---
+// --- Game Navigation ---
 function goToGame(url) {
-  const user = auth.currentUser;
-  if (user) {
-    const userData = {
-      uid: user.uid,
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL
-    };
-    localStorage.setItem("firebaseUser", JSON.stringify(userData));
-  }
+  console.log("[Game Navigation] Navigating to:", url);
   window.location.href = url;
 }

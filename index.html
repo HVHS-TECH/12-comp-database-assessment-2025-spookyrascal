@@ -16,12 +16,10 @@
       align-items: center;
       min-height: 100vh;
     }
-
     h1, h2 {
       color: #FF6F61;
       text-align: center;
     }
-
     button {
       background: #FF6F61;
       color: white;
@@ -36,7 +34,6 @@
     button:hover {
       background: #ff3b22;
     }
-
     .section {
       background: #1E1E1E;
       padding: 25px;
@@ -45,57 +42,8 @@
       width: 100%;
       max-width: 600px;
       box-shadow: 0 0 12px rgba(255,111,97,0.3);
-    }
-
-    label {
-      display: block;
-      margin: 12px 0 6px 0;
-      font-weight: 600;
-      color: #FFB3A2;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #333;
-      background: #2B2B2B;
-      color: #eee;
-      font-size: 1rem;
-    }
-    input::placeholder {
-      color: #888;
-    }
-
-    #message {
-      margin-top: 15px;
-      font-weight: 700;
       text-align: center;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: #ddd;
-    }
-
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #333;
-      text-align: left;
-    }
-
-    th {
-      background: #FF6F61;
-      color: white;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* Container for game buttons */
     #game-buttons {
       display: flex;
       justify-content: center;
@@ -103,174 +51,72 @@
       margin-top: 20px;
       flex-wrap: wrap;
     }
+    input[type="text"], input[type="number"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: left;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .error {
+      color: #ff3b22;
+      font-weight: bold;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
+
   <!-- Login Section -->
   <section id="login-section" class="section">
-    <h1>Welcome! 👋</h1>
-    <button onclick="login()">Login with Google</button>
+    <h1>Welcome to Game Hub</h1>
+    <button id="google-login-btn">Login with Google</button>
+    <p id="login-message"></p>
   </section>
 
-  <!-- User Section -->
-  <section id="user-section" class="section" style="display: none;">
+  <!-- Registration Section -->
+  <section id="registration-section" class="section" style="display:none;">
+    <h2>Complete Your Registration</h2>
+    <form id="registration-form">
+      <label for="gameName">Game Name (your player name):</label>
+      <input type="text" id="gameName" name="gameName" required maxlength="30" placeholder="Enter your game name" />
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
+
+      <button type="submit">Submit Registration</button>
+    </form>
+    <p id="registration-error" class="error"></p>
+  </section>
+
+  <!-- Logged-in & Registered User Section -->
+  <section id="user-section" class="section" style="display:none;">
     <h2>Hello, <span id="username"></span>!</h2>
-    <button onclick="logout()">Logout</button>
+    <button id="logout-btn">Logout</button>
 
     <!-- Game Buttons -->
     <div id="game-buttons">
-      <button onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
-      <button onclick="goToGame('AppleAttack/index.html')">Apple Attack</button>
+      <button onclick="goToGame('/MeteorRush/meteor-rush.html')">Meteor Rush</button>
+      <button onclick="goToGame('/AppleAttack/index.html')">Apple Attack</button>
     </div>
-
-    <!-- Registration Form -->
-    <form id="register-form">
-      <label for="gameName">Game Name:</label>
-      <input type="text" id="gameName" placeholder="The Game Your Going To Play" required />
-
-      <label for="age">Age:</label>
-      <input type="number" id="age" placeholder="5-120" required min="5" max="120" />
-
-      <button type="submit">Save Info</button>
-    </form>
-
-    <p id="message"></p>
+    <button id="leaderboard-btn" style="margin-top:20px;">View Leaderboard</button>
   </section>
 
-  <!-- Highscores Section -->
-  <section id="highscores-section" class="section">
-    <h2>🏆 High Scores</h2>
-    <table id="highscores-table">
-      <thead>
-        <tr><th>Name</th><th>Game</th><th>Score</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <!-- All Scores Section -->
-  <section id="scores-section" class="section">
-    <h2>📊 All Scores</h2>
-    <table>
-      <thead>
-        <tr><th>Name</th><th>Game</th><th>Score</th></tr>
-      </thead>
-      <tbody id="scores-body"></tbody>
-    </table>
-  </section>
-
-  <!-- Firebase and Scripts -->
+  <!-- Firebase SDKs & Main Logic -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-
-  <script src="firebase.js"></script>
-  <script>
-
-    function login() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(error => alert(error.message));
-    }
-
-    function logout() {
-      auth.signOut().catch(error => alert(error.message));
-    }
-
-    function displayMessage(msg, color) {
-      const messageElem = document.getElementById("message");
-      messageElem.textContent = msg;
-      messageElem.style.color = color || "black";
-    }
-
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(div => div.style.display = 'none');
-      document.getElementById(id).style.display = 'block';
-    }
-
-    function goToGame(path) {
-      window.location.href = path;
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("user-section").style.display = "block";
-        document.getElementById("username").textContent = user.displayName || "Anonymous";
-
-        // Save user info (age will be updated via form submission)
-        writeUserData(user);
-
-        loadScores();
-        loadHighscores();
-      } else {
-        document.getElementById("login-section").style.display = "block";
-        document.getElementById("user-section").style.display = "none";
-      }
-    });
-
-    document.getElementById("register-form").addEventListener("submit", e => {
-      e.preventDefault();
-
-      const gameName = document.getElementById("gameName").value.trim();
-      const age = parseInt(document.getElementById("age").value, 10);
-      const user = auth.currentUser;
-
-      if (user && gameName && age >= 5 && age <= 120) {
-        db.ref(`Games/${user.uid}`).update({ gameName, age })
-          .then(() => displayMessage("Registration info saved! 🎉", "green"))
-          .catch(error => displayMessage("Error saving data: " + error.message, "red"));
-      } else {
-        displayMessage("Invalid input or not logged in.", "red");
-      }
-    });
-
-    function loadScores() {
-      db.ref('Scores').once('value').then(snapshot => {
-        const scoresBody = document.getElementById('scores-body');
-        scoresBody.innerHTML = '';
-        const scores = [];
-
-        snapshot.forEach(userSnap => {
-          userSnap.forEach(scoreSnap => {
-            const entry = scoreSnap.val();
-            if (entry && typeof entry.score === 'number') scores.push(entry);
-          });
-        });
-
-        scores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 50)
-          .forEach(entry => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${entry.name || 'Anonymous'}</td><td>${entry.gameName || 'Unknown'}</td><td>${entry.score}</td>`;
-            scoresBody.appendChild(tr);
-          });
-      });
-    }
-
-    function loadHighscores() {
-      db.ref("Scores").once("value").then(snapshot => {
-        const highscoresTableBody = document.querySelector("#highscores-table tbody");
-        highscoresTableBody.innerHTML = "";
-        let allScores = [];
-
-        snapshot.forEach(userSnap => {
-          userSnap.forEach(scoreSnap => {
-            const entry = scoreSnap.val();
-            if (entry && typeof entry.score === 'number') allScores.push(entry);
-          });
-        });
-
-        allScores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 50)
-          .forEach(scoreEntry => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${scoreEntry.name || "Anonymous"}</td><td>${scoreEntry.gameName}</td><td>${scoreEntry.score}</td>`;
-            highscoresTableBody.appendChild(tr);
-          });
-      });
-    }
-  </script>
+  <script src="firebase.js"></script> <!-- This contains goToGame and all your logic -->
 </body>
 </html>

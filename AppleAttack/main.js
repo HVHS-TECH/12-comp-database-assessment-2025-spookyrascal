@@ -527,32 +527,20 @@ function walls(){
     wallBot.color = 'brown';
 }
 
-function submitScore(name, gameName, score) {
-  const user = firebase.auth().currentUser;
+ firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    const gameName = document.getElementById('gameName')?.value || 'UnknownGame';
+    const scoreData = {
+      name: user.displayName || "Anonymous",
+      gameName: gameName,
+      score: score,  // Make sure `score` is defined!
+      timestamp: Date.now()
+    };
 
-  if (!user) {
-    alert("You must be logged in to submit a score!");
-    return;
+    firebase.database().ref('Scores/' + user.uid).push(scoreData)
+      .then(() => console.log("✅ Score saved to Firebase."))
+      .catch(err => console.error("❌ Failed to save score:", err));
+  } else {
+    console.log("User not logged in");
   }
-
-  if (typeof score !== "number" || score < 0) {
-    alert("Invalid score!");
-    return;
-  }
-
-  const scoreData = {
-    name: name || "Anonymous",
-    gameName: gameName || "Unknown Game",
-    score: score,
-    timestamp: Date.now(),
-  };
-
-  // Push a new score entry under the user ID
-  firebase.database().ref(`Scores/${user.uid}`).push(scoreData)
-    .then(() => {
-      alert(`Score of ${score} submitted! 🏆`);
-    })
-    .catch((error) => {
-      alert("Error submitting score: " + error.message);
-    });
-}
+});
