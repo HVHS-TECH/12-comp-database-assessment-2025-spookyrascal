@@ -1,4 +1,6 @@
-// --- Firebase config ---
+// =====================
+// 🔥 Firebase Config & Init
+// =====================
 const firebaseConfig = {
   apiKey: "AIzaSyB5B5P_sSmNTN7RjkaV-I2TKNUJWj0cF1A",
   authDomain: "comp-2025-carmen-o-grady.firebaseapp.com",
@@ -10,69 +12,75 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
-// --- Firebase init ---
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-// --- Google Login ---
-const googleLoginBtn = document.getElementById('google-login-btn');
-const loginMessage = document.getElementById('login-message');
 
-if (googleLoginBtn) {
-  googleLoginBtn.addEventListener('click', () => {
+// =====================
+// 🔐 Google Login
+// =====================
+const loginBtn = document.getElementById('google-login-btn');
+const loginMsg = document.getElementById('login-message');
+
+if (loginBtn) {
+  loginBtn.addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-      .then((result) => {
-        loginMessage.textContent = "✅ Logged in as " + (result.user.displayName || result.user.email);
-        checkUserRegistration(result.user);
+      .then(res => {
+        loginMsg.textContent = `✅ Logged in as ${res.user.displayName || res.user.email}`;
+        checkUserRegistration(res.user);
       })
-      .catch(error => {
-        loginMessage.textContent = "❌ " + error.message;
+      .catch(err => {
+        loginMsg.textContent = "❌ " + err.message;
       });
   });
 }
 
-// --- Check if user has registered their details ---
+
+// =====================
+// 🧾 Check Registration
+// =====================
 function checkUserRegistration(user) {
-  const registrationSection = document.getElementById('registration-section');
+  const regSection = document.getElementById('registration-section');
   const userSection = document.getElementById('user-section');
 
-  db.ref(`Games/${user.uid}`).once('value')
-    .then(snapshot => {
-      if (snapshot.exists()) {
-        // User is already registered
-        registrationSection.style.display = 'none';
-        userSection.style.display = 'block';
-        document.getElementById('username').textContent =
-          snapshot.val().selectedGame || user.displayName || user.email;
-      } else {
-        // User needs to register
-        registrationSection.style.display = 'block';
-        userSection.style.display = 'none';
-      }
-    });
+  db.ref(`Games/${user.uid}`).once('value').then(snapshot => {
+    if (snapshot.exists()) {
+      // ✅ User is registered
+      regSection.style.display = 'none';
+      userSection.style.display = 'block';
+      const gameName = snapshot.val().selectedGame || user.displayName || user.email;
+      document.getElementById('username').textContent = gameName;
+    } else {
+      // ⚠️ User not registered
+      regSection.style.display = 'block';
+      userSection.style.display = 'none';
+    }
+  });
 }
 
-// --- Registration form submit ---
-const registrationForm = document.getElementById('registration-form');
-const registrationError = document.getElementById('registration-error');
 
-if (registrationForm) {
-  registrationForm.addEventListener('submit', e => {
+// =====================
+// 📝 Handle Registration Form
+// =====================
+const regForm = document.getElementById('registration-form');
+const regError = document.getElementById('registration-error');
+
+if (regForm) {
+  regForm.addEventListener('submit', e => {
     e.preventDefault();
-
     const user = auth.currentUser;
     if (!user) {
-      registrationError.textContent = "⚠️ Please log in first!";
+      regError.textContent = "⚠️ Please log in first!";
       return;
     }
 
-    const gameName = document.getElementById('gameName').value.trim();
-    const age = document.getElementById('age').value.trim();
+    const gameName = document.getElementById('gameName')?.value.trim();
+    const age = document.getElementById('age')?.value.trim();
 
     if (!gameName || !age) {
-      registrationError.textContent = "⚠️ Please fill all info fields!";
+      regError.textContent = "⚠️ Please fill all info fields!";
       return;
     }
 
@@ -86,38 +94,44 @@ if (registrationForm) {
 
     db.ref(`Games/${user.uid}`).set(userData)
       .then(() => {
-        registrationError.textContent = "";
+        regError.textContent = "";
         document.getElementById('registration-section').style.display = 'none';
         document.getElementById('user-section').style.display = 'block';
         document.getElementById('username').textContent = gameName;
       })
       .catch(err => {
         console.error("❌ Error saving user data:", err);
-        registrationError.textContent = "❌ Error saving info.";
+        regError.textContent = "❌ Error saving info.";
       });
   });
 }
 
-// --- Logout ---
+
+// =====================
+// 🚪 Logout
+// =====================
 const logoutBtn = document.getElementById('logout-btn');
 
 if (logoutBtn) {
   logoutBtn.addEventListener('click', () => {
     auth.signOut()
       .then(() => {
-        loginMessage.textContent = "👋 Logged out successfully!";
+        loginMsg.textContent = "👋 Logged out successfully!";
         document.getElementById('user-section').style.display = 'none';
         document.getElementById('registration-section').style.display = 'none';
         document.getElementById('login-section').style.display = 'block';
       })
       .catch(err => {
-        loginMessage.textContent = "❌ Error logging out.";
+        loginMsg.textContent = "❌ Error logging out.";
         console.error(err);
       });
   });
 }
 
-// --- Game Navigation Function with localStorage ---
+
+// =====================
+// 🎮 Game Navigation
+// =====================
 function goToGame(url) {
   const user = auth.currentUser;
   if (user) {

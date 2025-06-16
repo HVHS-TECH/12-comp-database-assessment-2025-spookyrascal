@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Game Hub</title>
+
+  <!-- Styles -->
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,10 +18,12 @@
       align-items: center;
       min-height: 100vh;
     }
+
     h1, h2 {
       color: #FF6F61;
       text-align: center;
     }
+
     button {
       background: #FF6F61;
       color: white;
@@ -31,9 +35,11 @@
       margin: 8px;
       transition: background 0.3s ease;
     }
+
     button:hover {
       background: #ff3b22;
     }
+
     .section {
       background: #1E1E1E;
       padding: 25px;
@@ -44,6 +50,7 @@
       box-shadow: 0 0 12px rgba(255,111,97,0.3);
       text-align: center;
     }
+
     #game-buttons {
       display: flex;
       justify-content: center;
@@ -51,6 +58,7 @@
       margin-top: 20px;
       flex-wrap: wrap;
     }
+
     input[type="text"], input[type="number"] {
       width: 80%;
       padding: 10px;
@@ -60,6 +68,7 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
+
     label {
       display: block;
       margin-top: 15px;
@@ -69,6 +78,7 @@
       margin-left: auto;
       margin-right: auto;
     }
+
     .error {
       color: #ff3b22;
       font-weight: bold;
@@ -76,6 +86,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Login Section -->
@@ -100,23 +111,26 @@
     <p id="registration-error" class="error"></p>
   </section>
 
-  <!-- Logged-in & Registered User Section -->
+  <!-- Logged-in Section -->
   <section id="user-section" class="section" style="display:none;">
     <h2>Hello, <span id="username"></span>!</h2>
     <button id="logout-btn">Logout</button>
 
-    <!-- Game Buttons -->
     <div id="game-buttons">
       <button onclick="goToGame('/MeteorRush/meteor-rush.html')">Meteor Rush</button>
-      <button onclick="goToGame('/AppleAttack/index.html')">Apple Attack</button>
+      <button onclick="goToGame('/AppleAttack/apple.html')">Apple Attack</button>
     </div>
+
     <button id="leaderboard-btn" style="margin-top:20px;">View Leaderboard</button>
   </section>
 
-  <!-- Firebase SDKs & Main Logic -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  <script src="firebase.js"></script> <!-- This contains goToGame and all your logic -->
+
+  <!-- Your scripts -->
+  <script src="firebase.js"></script>
+  <script src="consolelog.js"></script> 
 </body>
 </html>

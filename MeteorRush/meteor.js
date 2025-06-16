@@ -151,21 +151,26 @@ function endGame(won) {
   gameOverMessage.textContent = won ? '🌍 You reached Earth!' : '💥 Game Over!';
   finalScore.textContent = `Your Score: ${score}`;
   gameOverScreen.style.display = 'block';
-
-  if (firebase.auth().currentUser) {
-    const gameName = document.getElementById('gameName')?.value || 'UnknownGame';
-    const scoreData = {
-      name: firebase.auth().currentUser.displayName || "Anonymous",
-      gameName: gameName,
-      score: score,
-      timestamp: Date.now()
-    };
-
-    firebase.database().ref('Scores/' + firebase.auth().currentUser.uid).push(scoreData)
-      .then(() => console.log("✅ Score saved to Firebase."))
-      .catch(err => console.error("❌ Failed to save score:", err));
-  }
 }
 
+function saveScoreMeteorRush(score) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.warn("❌ No user logged in!");
+    return;
+  }
 
+  const scoreData = {
+    Name: user.displayName || user.email,
+    Score: score,
+    Timestamp: Date.now()
+  };
 
+  db.ref(`Scores/MeteorRush/${user.uid}`).set(scoreData)
+    .then(() => {
+      console.log(`✅ MeteorRush score saved for ${user.uid}:`, scoreData);
+    })
+    .catch(err => {
+      console.error("❌ Error saving MeteorRush score:", err);
+    });
+}
