@@ -12,6 +12,7 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -159,46 +160,50 @@ function goToGame(url) {
 // =====================
 // 🏆 Leaderboard
 // =====================
-document.getElementById("leaderboard-btn").addEventListener("click", () => {
-  document.getElementById("leaderboard-section").style.display = 'block';
-  updateLeaderboard();
-});
-
-function updateLeaderboard() {
-  const gameName = document.getElementById("game-select").value;
-  const tableBody = document.getElementById("leaderboard-body");
-
-  tableBody.innerHTML = `<tr><td colspan="3">Loading...</td></tr>`;
-
-  db.ref(`Scores/${gameName}`).once('value').then(snapshot => {
-    const data = snapshot.val();
-    if (!data) {
-      tableBody.innerHTML = `<tr><td colspan="3">No scores yet!</td></tr>`;
-      return;
-    }
-
-    const scores = Object.values(data)
-      .sort((a, b) => b.Score - a.Score)
-      .slice(0, 10);
-
-    tableBody.innerHTML = "";
-    scores.forEach((entry, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${entry.Name || "Unnamed"}</td>
-        <td style="text-align: right;">${entry.Score}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }).catch(error => {
-    console.error("❌ Error loading leaderboard:", error);
-    tableBody.innerHTML = `<tr><td colspan="3">Error loading leaderboard.</td></tr>`;
+const leaderboardBtn = document.getElementById("leaderboard-btn");
+if (leaderboardBtn) {
+  leaderboardBtn.addEventListener("click", () => {
+    document.getElementById("leaderboard-section").style.display = 'block';
+    updateLeaderboard();
   });
 }
 
 function hideLeaderboard() {
   document.getElementById("leaderboard-section").style.display = 'none';
+}
+
+function updateLeaderboard() {
+  const game = document.getElementById("game-select").value;
+  const leaderboardBody = document.getElementById("leaderboard-body");
+  leaderboardBody.innerHTML = `<tr><td colspan="3">Loading...</td></tr>`;
+
+  db.ref(`Scores/${game}`).once('value')
+    .then(snapshot => {
+      const data = snapshot.val();
+      if (!data) {
+        leaderboardBody.innerHTML = `<tr><td colspan="3">No scores yet!</td></tr>`;
+        return;
+      }
+
+      const scores = Object.values(data).map(entry => ({
+        name: entry.name || entry.Name || "Anonymous",
+        score: Number(entry.score || entry.Score || 0),
+      }));
+
+      scores.sort((a, b) => b.score - a.score);
+
+      leaderboardBody.innerHTML = scores.slice(0, 10).map((entry, i) => `
+        <tr>
+          <td>#${i + 1}</td>
+          <td>${entry.name}</td>
+          <td style="text-align: right;">${entry.score}</td>
+        </tr>
+      `).join('');
+    })
+    .catch(err => {
+      console.error("❌ Error loading leaderboard:", err);
+      leaderboardBody.innerHTML = `<tr><td colspan="3">Error loading scores</td></tr>`;
+    });
 }
 
 // =====================
@@ -207,36 +212,12 @@ function hideLeaderboard() {
 auth.onAuthStateChanged(user => {
   if (user) {
     console.log("[Auth State] User is logged in:", user.displayName || user.email);
-    // Check if user registered in DB, then update UI
     checkUserRegistration(user);
   } else {
     console.log("[Auth State] No user logged in");
-    // Show login UI, hide others
     document.getElementById('login-section').style.display = 'block';
     document.getElementById('registration-section').style.display = 'none';
     document.getElementById('user-section').style.display = 'none';
   }
 });
 
-
-function saveScoreMeteorRush(score) {
-  const user = auth.currentUser;
-  if (!user) {
-    console.warn("❌ No user logged in! Can't save score.");
-    return;
-  }
-
-  const scoreData = {
-    name: user.displayName || user.email || "Unknown Player",
-    score: score,  
-    timestamp: Date.now()
-  };
-
-  db.ref(`Scores/MeteorRush`).push(scoreData)
-    .then(() => {
-      console.log("✅ MeteorRush score saved:", scoreData);
-    })
-    .catch(err => {
-      console.error("❌ Error saving MeteorRush score:", err);
-    });
-}

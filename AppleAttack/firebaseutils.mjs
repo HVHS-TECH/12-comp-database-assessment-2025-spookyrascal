@@ -189,8 +189,8 @@ function writeScore(gameName, score) {
     timestamp: Date.now()
   };
 
-  // Save under Scores/{gameName}/{userId}/pushId
-  return db.ref(`Scores/${gameName}/${user.uid}`).push(scoreData)
+  // Save under Scores/{gameName}/{userId}
+  return db.ref(`Scores/${gameName}/${user.uid}`).set(scoreData)
     .then(() => console.log(`✅ Score saved for ${gameName}!`))
     .catch(err => console.error(`❌ Error saving score for ${gameName}:`, err));
 }
@@ -199,6 +199,7 @@ function onGameOver(finalScore) {
   writeScore("AppleAttack", finalScore);
 }
 
+// --- Save specifically for AppleAttack ---
 function saveScoreAppleAttack(score) {
   const user = auth.currentUser;
   if (!user) {
@@ -208,11 +209,11 @@ function saveScoreAppleAttack(score) {
 
   const scoreData = {
     name: user.displayName || user.email || "Unknown Player",
-    score: score,  
+    score: score,
     timestamp: Date.now()
   };
 
-  db.ref(`Scores/AppleAttack`).push(scoreData)
+  db.ref(`Scores/AppleAttack/${user.uid}`).set(scoreData)
     .then(() => {
       console.log("✅ AppleAttack score saved:", scoreData);
     })
@@ -221,45 +222,39 @@ function saveScoreAppleAttack(score) {
     });
 }
 
+// --- Read ALL scores for ALL games ---
 function readAllScores() {
   db.ref('Scores').once('value')
     .then(snapshot => {
       const allScores = snapshot.val();
       if (!allScores) {
-        console.log("No scores found! Try playing some games first!");
+        console.log("😶 No scores found! Go get some high scores first!");
         return;
       }
 
       const scoreList = [];
 
-      // Loop through each game
       for (const gameName in allScores) {
-        console.log(`🎮 === Scores for ${gameName} === 🎮`);
-
         const gameScores = allScores[gameName];
 
-        // Loop through each user in the game
+        console.log(`🎮 === Scores for ${gameName} === 🎮`);
+
         for (const userId in gameScores) {
-          const userScores = gameScores[userId];
+          const s = gameScores[userId];
+          scoreList.push({
+            name: s.name,
+            score: Number(s.score),
+            game: gameName,
+            time: new Date(s.timestamp).toLocaleString()
+          });
 
-          // Loop through each score entry for that user
-          for (const scoreId in userScores) {
-            const s = userScores[scoreId];
-            scoreList.push({
-              name: s.name,
-              score: Number(s.score),
-              game: gameName,
-              time: new Date(s.timestamp).toLocaleString()
-            });
-
-            console.log(`👾 Player: ${s.name} | Score: ${s.score} | Time: ${new Date(s.timestamp).toLocaleString()}`);
-          }
+          console.log(`👾 Player: ${s.name} | Score: ${s.score} | Time: ${new Date(s.timestamp).toLocaleString()}`);
         }
 
         console.log(`🎉 End of ${gameName} scores\n`);
       }
 
-      // Sort all scores together for overall leaderboard
+      // Optional: sort combined leaderboard by score
       scoreList.sort((a, b) => b.score - a.score);
 
       console.log("🏆 Overall leaderboard (all games combined):");
