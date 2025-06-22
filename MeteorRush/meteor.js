@@ -152,25 +152,3 @@ function endGame(won) {
   finalScore.textContent = `Your Score: ${score}`;
   gameOverScreen.style.display = 'block';
 }
-
-function saveScoreMeteorRush(score) {
-  const user = auth.currentUser;
-  if (!user) {
-    console.warn("❌ No user logged in!");
-    return;
-  }
-
-  const scoreData = {
-    Name: user.displayName || user.email,
-    Score: score,
-    Timestamp: Date.now()
-  };
-
-  db.ref(`Scores/MeteorRush/${user.uid}`).set(scoreData)
-    .then(() => {
-      console.log(`✅ MeteorRush score saved for ${user.uid}:`, scoreData);
-    })
-    .catch(err => {
-      console.error("❌ Error saving MeteorRush score:", err);
-    });
-}

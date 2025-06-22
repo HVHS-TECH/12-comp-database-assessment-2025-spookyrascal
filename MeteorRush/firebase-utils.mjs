@@ -24,7 +24,6 @@ googleLoginBtn.addEventListener('click', () => {
   auth.signInWithPopup(provider)
     .then((result) => {
       loginMessage.textContent = "✅ Logged in as " + (result.user.displayName || result.user.email);
-      // Show registration if needed
       checkUserRegistration(result.user);
     })
     .catch(error => {
@@ -65,10 +64,10 @@ registrationForm.addEventListener('submit', e => {
     return;
   }
 
-  const gameName = document.getElementById('gameName').value.trim();
+  const displayName = document.getElementById('displayName').value.trim();
   const age = document.getElementById('age').value.trim();
 
-  if (!gameName || !age) {
+  if (!displayName || !age) {
     registrationError.textContent = "⚠️ Please fill all info fields!";
     return;
   }
@@ -77,7 +76,7 @@ registrationForm.addEventListener('submit', e => {
     displayName: user.displayName,
     email: user.email,
     age: parseInt(age, 10),
-    selectedGame: gameName,
+    selectedGame: displayName,
     timestamp: Date.now()
   };
 
@@ -86,7 +85,7 @@ registrationForm.addEventListener('submit', e => {
       registrationError.textContent = "";
       document.getElementById('registration-section').style.display = 'none';
       document.getElementById('user-section').style.display = 'block';
-      document.getElementById('username').textContent = gameName;
+      document.getElementById('username').textContent = displayName;
     })
     .catch(err => {
       console.error("❌ Error saving user data:", err);
@@ -111,35 +110,53 @@ logoutBtn.addEventListener('click', () => {
     });
 });
 
-// --- Read all scores from all users ---
+// --- Read all scores from all users and games ---
 function readAllScores() {
   db.ref('Scores').once('value')
     .then(snapshot => {
-      const scores = snapshot.val();
-      if (!scores) {
-        console.log("No scores found!");
+      const allScores = snapshot.val();
+      if (!allScores) {
+        console.log("No scores found! Try playing some games first!");
         return;
       }
 
       const scoreList = [];
 
-      for (const userId in scores) {
-        const userScores = scores[userId];
-        for (const scoreId in userScores) {
-          const s = userScores[scoreId];
-          scoreList.push({
-            name: s.name,
-            score: s.score,
-            game: s.gameName,
-            time: new Date(s.timestamp).toLocaleString()
-          });
+      // Loop through each game
+      for (const gameName in allScores) {
+        console.log(`🎮 === Scores for ${gameName} === 🎮`);
+
+        const gameScores = allScores[gameName];
+
+        // Loop through each user in the game
+        for (const userId in gameScores) {
+          const userScores = gameScores[userId];
+
+          // Loop through each score entry for that user
+          for (const scoreId in userScores) {
+            const s = userScores[scoreId];
+            scoreList.push({
+              name: s.name,
+              score: Number(s.score),
+              game: gameName,
+              time: new Date(s.timestamp).toLocaleString()
+            });
+
+            console.log(`👾 Player: ${s.name} | Score: ${s.score} | Time: ${new Date(s.timestamp).toLocaleString()}`);
+          }
         }
+
+        console.log(`🎉 End of ${gameName} scores\n`);
       }
 
+      // Sort all scores together for overall leaderboard
       scoreList.sort((a, b) => b.score - a.score);
 
-      // You can add leaderboard UI updates here if you want
-      console.log(scoreList); // For now just console.log
+      console.log("🏆 Overall leaderboard (all games combined):");
+      scoreList.forEach((entry, index) => {
+        console.log(`${index + 1}. ${entry.name} - ${entry.score} pts [${entry.game}] at ${entry.time}`);
+      });
+
     })
     .catch(err => console.error("❌ Error reading scores:", err));
 }
@@ -168,7 +185,7 @@ function goToGame(path) {
   window.location.href = path;
 }
 
-// --- Save a score under Scores/<UID>/ ---
+// --- Save a score under Scores/<gameName>/<UID>/ ---
 function writeScore(gameName, score) {
   const user = auth.currentUser;
   if (!user) {
@@ -179,17 +196,15 @@ function writeScore(gameName, score) {
   const scoreData = {
     name: user.displayName || "Anonymous",
     score: score,
-    gameName: gameName,
     timestamp: Date.now()
   };
 
-  return db.ref(`Scores/${user.uid}`).push(scoreData)
-    .then(() => console.log("✅ Score saved!"))
-    .catch(err => console.error("❌ Error saving score:", err));
+  return db.ref(`Scores/${gameName}/${user.uid}`).push(scoreData)
+    .then(() => console.log(`✅ Score saved for ${gameName}!`))
+    .catch(err => console.error(`❌ Error saving score for ${gameName}:`, err));
 }
 
 // --- Called when a game finishes to save score ---
-function onGameOver(finalScore) {
-  const gameName = "Apple Attack";
+function onGameOver(finalScore, gameName) {
   writeScore(gameName, finalScore);
 }

@@ -15,8 +15,7 @@
   <script src="https://p5play.org/v3/p5play.js"></script>
   <script src="main.js"></script>
   <link rel="stylesheet" href="style.css">
-  <script src="firebaseutils.js"></script>
-  <script src="/consolelog.js"></script> 
+  <script src="firebaseutils.mjs"></script>
   
 </head>
 
@@ -42,12 +41,20 @@
 </html>
 
 <script>
-writeScore("AppleAttack", score);
-
 function goBack() {
   window.location.href = "/index.html";
 }
 </script>
+
+ <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Your Firebase logic -->
+  <script type="module" src="firebaseutils.mjs"></script>
+</body>
+</html>
 <!--***************************************************
   END OF INDEX.HTML
 ****************************************************-->

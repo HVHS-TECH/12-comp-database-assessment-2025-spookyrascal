@@ -11,8 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <title>Meteor Rush</title>
   <link rel="stylesheet" href="/MeteorRush/meteor.css">
-  <script src="firebase-utils.js"></script>
-  <script src="/consolelog.js"></script> 
+  <script src="firebase-utils.mjs"></script>
 </head>
 <body>
   <div class="start-screen">
@@ -64,8 +63,7 @@
 
       gameOverScreen.style.display = 'block';
 
-      //AI helped with anything to do with score
-     writeScore("MeteorRush", score);
+saveScore("MeteorRush", score);
     }
 
       function goBack() {

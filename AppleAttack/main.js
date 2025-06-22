@@ -527,41 +527,4 @@ function walls(){
     wallBot.color = 'brown';
 }
 
- firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    const gameName = document.getElementById('gameName')?.value || 'Apple Attack';
-    const scoreData = {
-      name: user.displayName || "Anonymous",
-      score: score,  
-      timestamp: Date.now()
-    };
 
-    firebase.database().ref('Scores/' + user.uid).push(scoreData)
-      .then(() => console.log("✅ Score saved to Firebase."))
-      .catch(err => console.error("❌ Failed to save score:", err));
-  } else {
-    console.log("User not logged in");
-  }
-});
-
-function saveScoreAppleAttack(score) {
-  const user = auth.currentUser;
-  if (!user) {
-    console.warn("❌ No user logged in!");
-    return;
-  }
-
-  const scoreData = {
-    Name: user.displayName || user.email,
-    Score: score,
-    Timestamp: Date.now()
-  };
-
-  db.ref(`Scores/AppleAttack/${user.uid}`).set(scoreData)
-    .then(() => {
-      console.log(`✅ AppleAttack score saved for ${user.uid}:`, scoreData);
-    })
-    .catch(err => {
-      console.error("❌ Error saving AppleAttack score:", err);
-    });
-}

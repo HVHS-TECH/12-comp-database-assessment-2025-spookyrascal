@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Game Hub</title>
-
-  <!-- Styles -->
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -47,7 +45,7 @@
       margin: 20px 0;
       width: 100%;
       max-width: 600px;
-      box-shadow: 0 0 12px rgba(255,111,97,0.3);
+      box-shadow: 0 0 12px rgba(255, 111, 97, 0.3);
       text-align: center;
     }
 
@@ -59,7 +57,7 @@
       flex-wrap: wrap;
     }
 
-    input[type="text"], input[type="number"] {
+    input[type="text"], input[type="number"], select {
       width: 80%;
       padding: 10px;
       margin: 10px 0;
@@ -84,11 +82,28 @@
       font-weight: bold;
       margin-top: 5px;
     }
+
+    table {
+      width: 100%;
+      color: white;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid #FF6F61;
+    }
+
+    td:last-child {
+      text-align: right;
+    }
   </style>
 </head>
-
 <body>
-
   <!-- Login Section -->
   <section id="login-section" class="section">
     <h1>Welcome to Game Hub</h1>
@@ -100,8 +115,8 @@
   <section id="registration-section" class="section" style="display:none;">
     <h2>Complete Your Registration</h2>
     <form id="registration-form">
-      <label for="gameName">Game Name (your player name):</label>
-      <input type="text" id="gameName" name="gameName" required maxlength="30" placeholder="Enter your game name" />
+      <label for="displayName">Display Name (your player name):</label>
+      <input type="text" id="displayName" name="displayName" required maxlength="30" placeholder="Enter your display name" />
 
       <label for="age">Age:</label>
       <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
@@ -124,13 +139,34 @@
     <button id="leaderboard-btn" style="margin-top:20px;">View Leaderboard</button>
   </section>
 
+  <!-- Leaderboard Section -->
+  <section id="leaderboard-section" class="section" style="display:none;">
+    <h2>Top Scores</h2>
+
+    <label for="game-select">Select Game:</label>
+    <select id="game-select" onchange="updateLeaderboard()">
+      <option value="MeteorRush">Meteor Rush</option>
+      <option value="AppleAttack">Apple Attack</option>
+    </select>
+
+    <table id="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Player</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+
+    <button onclick="hideLeaderboard()" style="margin-top: 20px;">Close</button>
+  </section>
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-
-  <!-- Your scripts -->
-  <script src="firebase.js"></script>
-  <script src="consolelog.js"></script> 
+  <script src="firebase.mjs"></script>
 </body>
 </html>
