@@ -3,170 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Hub</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #121212;
-      color: #eee;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    h1, h2 {
-      color: #FF6F61;
-      text-align: center;
-    }
-
-    button {
-      background: #FF6F61;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin: 8px;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #ff3b22;
-    }
-
-    .section {
-      background: #1E1E1E;
-      padding: 25px;
-      border-radius: 12px;
-      margin: 20px 0;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 0 12px rgba(255, 111, 97, 0.3);
-      text-align: center;
-    }
-
-    #game-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    input[type="text"], input[type="number"], select {
-      width: 80%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: none;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: left;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .error {
-      color: #ff3b22;
-      font-weight: bold;
-      margin-top: 5px;
-    }
-
-    table {
-      width: 100%;
-      color: white;
-      margin-top: 15px;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 10px;
-    }
-
-    thead tr {
-      border-bottom: 2px solid #FF6F61;
-    }
-
-    td:last-child {
-      text-align: right;
-    }
-  </style>
+  <title>Game Hub - Full Layout</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Login Section -->
-  <section id="login-section" class="section">
-    <h1>Welcome to Game Hub</h1>
-    <button id="google-login-btn">Login with Google</button>
-    <p id="login-message"></p>
-  </section>
 
-  <!-- Registration Section -->
-  <section id="registration-section" class="section" style="display:none;">
-    <h2>Complete Your Registration</h2>
-    <form id="registration-form">
-      <label for="displayName">Display Name (your player name):</label>
-      <input type="text" id="displayName" name="displayName" required maxlength="30" placeholder="Enter your display name" />
-
-      <label for="age">Age:</label>
-      <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
-
-      <button type="submit">Submit Registration</button>
-    </form>
-    <p id="registration-error" class="error"></p>
-  </section>
-
-  <!-- Logged-in Section -->
-  <section id="user-section" class="section" style="display:none;">
-    <h2>Hello, <span id="username"></span>!</h2>
-    <button id="logout-btn">Logout</button>
-
-    <div id="game-buttons">
-      <button onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
-      <button onclick="goToGame('AppleAttack/apple.html')">Apple Attack</button>
+  <nav id="sidebar">
+    <div class="logo">
+      <h1>🎮 GameHub</h1>
     </div>
+    <ul class="nav-links">
+      <li><button class="nav-btn active" data-section="home-section">Home</button></li>
+      <li><button class="nav-btn" data-section="games-section">Games</button></li>
+      <li><button class="nav-btn" data-section="leaderboard-section">Leaderboard</button></li>
+      <li><button class="nav-btn" data-section="profile-section">Profile</button></li>
+      <li><button id="logout-btn" style="margin-top: auto;">Logout</button></li>
+    </ul>
+  </nav>
 
-    <button id="leaderboard-btn" style="margin-top:20px;">View Leaderboard</button>
-  </section>
+  <main id="main-content">
+    <!-- Home Section -->
+    <section id="home-section" class="section active">
+      <h2>Welcome to GameHub</h2>
+      <button id="google-login-btn">Login with Google</button>
+      <p id="login-message"></p>
+    </section>
 
-  <!-- Leaderboard Section -->
-  <section id="leaderboard-section" class="section" style="display:none;">
-    <h2>Top Scores</h2>
+    <!-- Registration Section -->
+    <section id="registration-section" class="section" style="display:none;">
+      <h2>Complete Your Registration</h2>
+      <form id="registration-form">
+        <label for="displayName">Display Name (your player name):</label>
+        <input type="text" id="displayName" name="displayName" required maxlength="30" placeholder="Enter your display name" />
 
-    <label for="game-select">Select Game:</label>
-    <select id="game-select" onchange="updateLeaderboard()">
-      <option value="MeteorRush">Meteor Rush</option>
-      <option value="AppleAttack">Apple Attack</option>
-    </select>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
 
-    <table id="leaderboard-table">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Player</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body"></tbody>
-    </table>
+        <button type="submit">Submit Registration</button>
+      </form>
+      <p id="registration-error" class="error"></p>
+    </section>
 
-    <button onclick="hideLeaderboard()" style="margin-top: 20px;">Close</button>
-  </section>
+    <!-- Games Section -->
+    <section id="games-section" class="section" style="display:none;">
+      <h2>Choose a Game</h2>
+      <div class="game-list">
+        <button onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
+        <button onclick="goToGame('AppleAttack/apple.html')">Apple Attack</button>
+      </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard-section" class="section" style="display:none;">
+      <h2>Leaderboard</h2>
+      <label for="game-select">Select Game:</label>
+      <select id="game-select" onchange="updateLeaderboard()">
+        <option value="MeteorRush">Meteor Rush</option>
+        <option value="AppleAttack">Apple Attack</option>
+      </select>
+
+      <table id="leaderboard-table" aria-live="polite" role="table" tabindex="0">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Player</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile-section" class="section" style="display:none;">
+      <h2>Your Profile</h2>
+      <p><strong>Name:</strong> <span id="profile-name">Anonymous</span></p>
+      <p><strong>Email:</strong> <span id="profile-email">Not logged in</span></p>
+    </section>
+  </main>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script src="firebase.mjs"></script>
+
+  <script>
+    // Simple nav button toggle logic
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.dataset.section;
+        sections.forEach(sec => {
+          sec.style.display = (sec.id === target) ? 'block' : 'none';
+          sec.classList.toggle('active', sec.id === target);
+        });
+      });
+    });
+
+
+  </script>
+
 </body>
 </html>
+

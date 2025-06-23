@@ -47,28 +47,20 @@
 
   <script src="/MeteorRush/meteor.js"></script>
   <script>
-    function gameOver(won) {
-      gameRunning = false; // Stop the game
-
-      document.getElementById('gameCanvas').style.display = 'none';
-      document.querySelector('.start-screen').style.display = 'none';
-
-      // Show the game over screen
-      const gameOverScreen = document.getElementById('game-over-screen');
-      const message = document.getElementById('game-over-message');
-      const scoreText = document.getElementById('final-score');
-
-      message.textContent = won ? '🌍 You reached Earth!' : '💥 Game Over!';
-      scoreText.textContent = `Your Score: ${score}`;
-
-      gameOverScreen.style.display = 'block';
-
-saveScore("MeteorRush", score);
-    }
-
       function goBack() {
       window.location.href = "/index.html";
     }
+  // When the player finishes Meteor Rush
+saveMeteorRushScore(finalScore);
+
+// To get the top scores
+getMeteorRushLeaderboard((scores) => {
+  console.log("🌠 Meteor Rush Leaderboard:");
+  scores.forEach((s, i) => {
+    console.log(`${i + 1}. ${s.name} - ${s.score}`);
+  });
+});
+
   </script>
 </body>
 </html>

@@ -10,13 +10,15 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase (only if not already initialized)
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 const db = firebase.database();
 
-// Save a score for a game (multiple scores allowed per user)
-function writeScore(gameName, score) {
+// --- Save score specifically for AppleAttack ---
+function saveAppleAttackScore(score) {
   const user = auth.currentUser;
   if (!user) {
     alert("⚠️ You need to be logged in to save your score!");
@@ -29,25 +31,24 @@ function writeScore(gameName, score) {
     timestamp: Date.now()
   };
 
-  // Push new score under Scores/{gameName}/{userId}/
-  return db.ref(`Scores/${gameName}/${user.uid}`).push(scoreData)
-    .then(() => console.log(`✅ Score saved for ${gameName}!`))
-    .catch(err => console.error(`❌ Error saving score for ${gameName}:`, err));
+  // Save under Scores/AppleAttack/{userId}/
+  return db.ref(`Scores/AppleAttack/${user.uid}`).push(scoreData)
+    .then(() => console.log("✅ AppleAttack score saved!"))
+    .catch(err => console.error("❌ Error saving AppleAttack score:", err));
 }
 
-// Read leaderboard for a game and pass sorted array to callback
-function readLeaderboard(gameName, callback) {
-  db.ref(`Scores/${gameName}`).once('value')
+// --- Read AppleAttack leaderboard ---
+function getAppleAttackLeaderboard(callback) {
+  db.ref("Scores/AppleAttack").once('value')
     .then(snapshot => {
       const data = snapshot.val();
       if (!data) {
-        callback([]); // No scores yet
+        callback([]);
         return;
       }
 
       const scores = [];
 
-      // Flatten all user scores for the game
       for (const userId in data) {
         const userScores = data[userId];
         for (const scoreId in userScores) {
@@ -60,14 +61,12 @@ function readLeaderboard(gameName, callback) {
         }
       }
 
-      // Sort descending by score
+      // Sort from highest to lowest
       scores.sort((a, b) => b.score - a.score);
-
       callback(scores);
     })
     .catch(err => {
-      console.error("❌ Error loading leaderboard:", err);
+      console.error("❌ Error loading AppleAttack leaderboard:", err);
       callback([]);
     });
 }
-

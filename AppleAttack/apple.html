@@ -8,15 +8,24 @@
   <meta name="author" content="Mio Hoffman">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- P5.js & P5.play *****************************-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.js" integrity="sha512-bzpp8klYroR6PFgL3RJ+VkvY5hJna7Zd38OA56peUDHSNQpSiN9lDQVnMYtcw7hoAVhbR6mAOdH+ymzg1o+G0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://p5play.org/v3/planck.min.js"></script>
-  <script src="https://p5play.org/v3/p5play.js"></script>
-  <script src="main.js"></script>
-  <link rel="stylesheet" href="style.css">
-  <script src="firebaseutils.mjs"></script>
-  
+  <!-- Scripts *****************************-->
+<!-- P5.js & P5.play -->
+<script src="https://cdn.jsdelivr.net/npm/p5@1.11.4/lib/p5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.11.4/lib/addons/p5.sound.min.js"></script>
+<script src="https://p5play.org/v3/planck.min.js"></script>
+<script src="https://p5play.org/v3/p5play.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
+<!-- 🎮 Your Game -->
+<script src="firebaseutils.js"></script> 
+<script src="main.js"></script> 
+
+<!-- 💅 Styling -->
+<link rel="stylesheet" href="style.css">
 </head>
 
 <!--***************************************************
@@ -44,6 +53,18 @@
 function goBack() {
   window.location.href = "/index.html";
 }
+
+// Call when player finishes game
+saveAppleAttackScore(finalScore);
+
+// Call to fetch scores
+getAppleAttackLeaderboard((scores) => {
+  console.log("🏆 Top Scores:");
+  scores.forEach((s, i) => {
+    console.log(`${i + 1}. ${s.name} - ${s.score}`);
+  });
+});
+
 </script>
 
  <!-- Firebase SDKs -->
