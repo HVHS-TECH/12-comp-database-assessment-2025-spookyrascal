@@ -12,7 +12,6 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -28,10 +27,12 @@ if (googleLoginBtn) {
     console.log("[Login] Google login button clicked");
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
-      .then((result) => {
+      .then(result => {
         console.log("[Login] Login successful:", result.user.displayName || result.user.email);
         loginMessage.textContent = "✅ Logged in as " + (result.user.displayName || result.user.email);
         checkUserRegistration(result.user);
+        showSection('games-section');
+        activateNavButton('games-section');
       })
       .catch(error => {
         console.error("[Login] Login error:", error.message);
@@ -41,33 +42,37 @@ if (googleLoginBtn) {
 }
 
 // =====================
-// 🧾 Check Registration
+// 🧾 Check User Registration
 // =====================
 function checkUserRegistration(user) {
   console.log("[Check Registration] Checking registration for user:", user.uid);
   const registrationSection = document.getElementById('registration-section');
-  const userSection = document.getElementById('user-section');
+  const homeSection = document.getElementById('home-section');
 
   db.ref(`Games/${user.uid}`).once('value')
     .then(snapshot => {
       if (snapshot.exists()) {
         console.log("[Check Registration] User is registered");
         registrationSection.style.display = 'none';
-        userSection.style.display = 'block';
-        document.getElementById('username').textContent = snapshot.val().selectedGame || user.displayName || user.email;
+        homeSection.style.display = 'none';
+        showSection('games-section');
+        activateNavButton('games-section');
+        updateProfileDisplay(snapshot.val().selectedGame || user.displayName || "Anonymous", user.email);
       } else {
         console.log("[Check Registration] User not registered, showing registration form");
         registrationSection.style.display = 'block';
-        userSection.style.display = 'none';
+        homeSection.style.display = 'none';
+        showSection('registration-section');
+        activateNavButton('registration-section');
       }
     })
     .catch(err => {
-      console.error("[Check Registration] Error checking registration:", err);
+      console.error("[Check Registration] Error:", err);
     });
 }
 
 // =====================
-// 📝 Handle Registration Form
+// 📝 Registration Form Handler
 // =====================
 const registrationForm = document.getElementById('registration-form');
 const registrationError = document.getElementById('registration-error');
@@ -79,7 +84,6 @@ if (registrationForm) {
 
     const user = auth.currentUser;
     if (!user) {
-      console.warn("[Registration] No user logged in");
       registrationError.textContent = "⚠️ Please log in first!";
       return;
     }
@@ -88,13 +92,12 @@ if (registrationForm) {
     const age = document.getElementById('age').value.trim();
 
     if (!displayName || !age) {
-      console.warn("[Registration] Missing fields");
       registrationError.textContent = "⚠️ Please fill all info fields!";
       return;
     }
 
     const userData = {
-      displayName: user.displayName,
+      displayName: user.displayName || displayName,
       email: user.email,
       age: parseInt(age, 10),
       selectedGame: displayName,
@@ -105,9 +108,9 @@ if (registrationForm) {
       .then(() => {
         console.log("[Registration] User data saved successfully");
         registrationError.textContent = "";
-        document.getElementById('registration-section').style.display = 'none';
-        document.getElementById('user-section').style.display = 'block';
-        document.getElementById('username').textContent = displayName;
+        showSection('games-section');
+        activateNavButton('games-section');
+        updateProfileDisplay(displayName, user.email);
       })
       .catch(err => {
         console.error("[Registration] Error saving user data:", err);
@@ -117,7 +120,7 @@ if (registrationForm) {
 }
 
 // =====================
-// 🚪 Logout
+// 🚪 Logout Handler
 // =====================
 const logoutBtn = document.getElementById('logout-btn');
 
@@ -128,9 +131,9 @@ if (logoutBtn) {
       .then(() => {
         console.log("[Logout] Logged out successfully");
         loginMessage.textContent = "👋 Logged out successfully!";
-        document.getElementById('user-section').style.display = 'none';
-        document.getElementById('registration-section').style.display = 'none';
-        document.getElementById('login-section').style.display = 'block';
+        showSection('home-section');
+        activateNavButton('home-section');
+        updateProfileDisplay('Anonymous', 'Not logged in');
       })
       .catch(err => {
         console.error("[Logout] Error logging out:", err);
@@ -158,30 +161,18 @@ function goToGame(url) {
 }
 
 // =====================
-// 🏆 Leaderboard
+// 🏆 Leaderboard Update
 // =====================
-const leaderboardBtn = document.getElementById("leaderboard-btn");
-if (leaderboardBtn) {
-  leaderboardBtn.addEventListener("click", () => {
-    document.getElementById("leaderboard-section").style.display = 'block';
-    updateLeaderboard();
-  });
-}
-
-function hideLeaderboard() {
-  document.getElementById("leaderboard-section").style.display = 'none';
-}
-
 function updateLeaderboard() {
   const game = document.getElementById("game-select").value;
   const leaderboardBody = document.getElementById("leaderboard-body");
-  leaderboardBody.innerHTML = `<tr><td colspan="3">Loading...</td></tr>`;
+  leaderboardBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>`;
 
   db.ref(`Scores/${game}`).once('value')
     .then(snapshot => {
       const data = snapshot.val();
       if (!data) {
-        leaderboardBody.innerHTML = `<tr><td colspan="3">No scores yet!</td></tr>`;
+        leaderboardBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No scores yet!</td></tr>`;
         return;
       }
 
@@ -195,29 +186,64 @@ function updateLeaderboard() {
       leaderboardBody.innerHTML = scores.slice(0, 10).map((entry, i) => `
         <tr>
           <td>#${i + 1}</td>
-          <td>${entry.name}</td>
+          <td>${sanitizeHTML(entry.name)}</td>
           <td style="text-align: right;">${entry.score}</td>
         </tr>
       `).join('');
     })
     .catch(err => {
       console.error("❌ Error loading leaderboard:", err);
-      leaderboardBody.innerHTML = `<tr><td colspan="3">Error loading scores</td></tr>`;
+      leaderboardBody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Error loading scores</td></tr>`;
     });
 }
 
 // =====================
-// 🔄 Keep user logged in on page load
+// 🧩 Helpers
+// =====================
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(sec => {
+    sec.style.display = (sec.id === sectionId) ? 'block' : 'none';
+    sec.classList.toggle('active', sec.id === sectionId);
+  });
+}
+
+function activateNavButton(sectionId) {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === sectionId);
+  });
+}
+
+function updateProfileDisplay(name, email) {
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-email').textContent = email;
+}
+
+function sanitizeHTML(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
+
+// =====================
+// 🔄 Auth State Persistence
 // =====================
 auth.onAuthStateChanged(user => {
   if (user) {
-    console.log("[Auth State] User is logged in:", user.displayName || user.email);
+    console.log("[Auth State] User logged in:", user.displayName || user.email);
     checkUserRegistration(user);
   } else {
     console.log("[Auth State] No user logged in");
-    document.getElementById('login-section').style.display = 'block';
-    document.getElementById('registration-section').style.display = 'none';
-    document.getElementById('user-section').style.display = 'none';
+    showSection('home-section');
+    activateNavButton('home-section');
+    updateProfileDisplay('Anonymous', 'Not logged in');
   }
 });
+
+// Attach leaderboard update listener
+document.getElementById('game-select').addEventListener('change', updateLeaderboard);
+
+// Optional: Trigger leaderboard update if visible on page load
+if (document.querySelector('#leaderboard-section.active')) {
+  updateLeaderboard();
+}
 

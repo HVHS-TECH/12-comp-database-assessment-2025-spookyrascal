@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-<script>
-</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meteor Rush</title>
-  <link rel="stylesheet" href="/MeteorRush/meteor.css">
-  <script src="firebase-utils.mjs"></script>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
+  
+  <!-- Firebase SDK (compat versions) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="/MeteorRush/meteor.css" />
+  
+  <!-- Your Firebase utils module -->
+  <script src="firebase-utils.mjs" type="module"></script>
 </head>
 <body>
+  <!-- Start Screen -->
   <div class="start-screen">
     <h1>Meteor Rush</h1>
     <button class="start-btn">Start</button>
     <button class="instructions-btn">?</button>
   </div>
 
+  <!-- Game Canvas -->
   <canvas id="gameCanvas"></canvas>
 
-  <div id="instructions-modal" class="modal">
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="modal" style="display:none;">
     <div class="modal-content">
       <span class="close-btn">&times;</span>
       <h2>How to Play</h2>
@@ -37,30 +46,24 @@
     </div>
   </div>
 
-  <div class="pause-overlay">PAUSED</div>
+  <!-- Pause Overlay -->
+  <div class="pause-overlay" style="display:none;">PAUSED</div>
 
+  <!-- Game Over Screen -->
   <div id="game-over-screen" style="display:none; text-align:center; color: white; background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; width: 100%; height: 100%; padding-top: 150px; font-family: 'Orbitron', monospace;">
     <h2 id="game-over-message" style="font-size: 48px; margin-bottom: 20px;"></h2>
     <p id="final-score" style="font-size: 32px; margin-bottom: 40px;"></p>
     <button onclick="goBack()" style="font-size: 24px; padding: 10px 20px; cursor: pointer;">Back to Portal</button>
   </div>
 
+  <!-- Your game logic -->
   <script src="/MeteorRush/meteor.js"></script>
+
   <script>
-      function goBack() {
+    // Navigate back to main portal
+    function goBack() {
       window.location.href = "/index.html";
     }
-  // When the player finishes Meteor Rush
-saveMeteorRushScore(finalScore);
-
-// To get the top scores
-getMeteorRushLeaderboard((scores) => {
-  console.log("🌠 Meteor Rush Leaderboard:");
-  scores.forEach((s, i) => {
-    console.log(`${i + 1}. ${s.name} - ${s.score}`);
-  });
-});
-
   </script>
 </body>
 </html>

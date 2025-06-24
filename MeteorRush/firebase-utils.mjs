@@ -10,14 +10,15 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
-// Initialize Firebase (only once per app)
+// Initialize Firebase once
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 const auth = firebase.auth();
 const db = firebase.database();
 
-// --- Save score specifically for MeteorRush ---
+// --- Save MeteorRush score ---
 function saveMeteorRushScore(score) {
   const user = auth.currentUser;
   if (!user) {
@@ -31,13 +32,13 @@ function saveMeteorRushScore(score) {
     timestamp: Date.now()
   };
 
-  // Save under Scores/MeteorRush/{userId}/
-  return db.ref(`Scores/MeteorRush/${user.uid}`).push(scoreData)
+  // Save score directly under Scores/MeteorRush/
+  return db.ref('Scores/MeteorRush').push(scoreData)
     .then(() => console.log("✅ MeteorRush score saved!"))
     .catch(err => console.error("❌ Error saving MeteorRush score:", err));
 }
 
-// --- Read MeteorRush leaderboard ---
+// --- Fetch MeteorRush leaderboard ---
 function getMeteorRushLeaderboard(callback) {
   db.ref("Scores/MeteorRush").once('value')
     .then(snapshot => {
@@ -47,22 +48,16 @@ function getMeteorRushLeaderboard(callback) {
         return;
       }
 
-      const scores = [];
+      // Map over all scores directly (flat structure)
+      const scores = Object.values(data).map(s => ({
+        name: s.name || "Anonymous",
+        score: Number(s.score),
+        timestamp: s.timestamp
+      }));
 
-      for (const userId in data) {
-        const userScores = data[userId];
-        for (const scoreId in userScores) {
-          const s = userScores[scoreId];
-          scores.push({
-            name: s.name || "Anonymous",
-            score: Number(s.score),
-            timestamp: s.timestamp
-          });
-        }
-      }
-
-      // Sort from highest to lowest
+      // Sort descending by score
       scores.sort((a, b) => b.score - a.score);
+
       callback(scores);
     })
     .catch(err => {

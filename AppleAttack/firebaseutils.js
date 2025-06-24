@@ -10,14 +10,15 @@ const firebaseConfig = {
   measurementId: "G-BGRNW3X6K8"
 };
 
-// Initialize Firebase (only if not already initialized)
+// Initialize Firebase once
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 const auth = firebase.auth();
 const db = firebase.database();
 
-// --- Save score specifically for AppleAttack ---
+// --- Save AppleAttack score ---
 function saveAppleAttackScore(score) {
   const user = auth.currentUser;
   if (!user) {
@@ -31,13 +32,13 @@ function saveAppleAttackScore(score) {
     timestamp: Date.now()
   };
 
-  // Save under Scores/AppleAttack/{userId}/
-  return db.ref(`Scores/AppleAttack/${user.uid}`).push(scoreData)
+  // Save score directly under Scores/AppleAttack/
+  return db.ref('Scores/AppleAttack').push(scoreData)
     .then(() => console.log("✅ AppleAttack score saved!"))
     .catch(err => console.error("❌ Error saving AppleAttack score:", err));
 }
 
-// --- Read AppleAttack leaderboard ---
+// --- Fetch AppleAttack leaderboard ---
 function getAppleAttackLeaderboard(callback) {
   db.ref("Scores/AppleAttack").once('value')
     .then(snapshot => {
@@ -47,22 +48,16 @@ function getAppleAttackLeaderboard(callback) {
         return;
       }
 
-      const scores = [];
+      // Map scores directly (flat structure)
+      const scores = Object.values(data).map(s => ({
+        name: s.name || "Anonymous",
+        score: Number(s.score),
+        timestamp: s.timestamp
+      }));
 
-      for (const userId in data) {
-        const userScores = data[userId];
-        for (const scoreId in userScores) {
-          const s = userScores[scoreId];
-          scores.push({
-            name: s.name || "Anonymous",
-            score: Number(s.score),
-            timestamp: s.timestamp
-          });
-        }
-      }
-
-      // Sort from highest to lowest
+      // Sort descending by score
       scores.sort((a, b) => b.score - a.score);
+
       callback(scores);
     })
     .catch(err => {

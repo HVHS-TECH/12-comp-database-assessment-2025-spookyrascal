@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Hub - Full Layout</title>
+  <title>Game Hub</title>
+  
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <nav id="sidebar">
     <div class="logo">
-      <h1>🎮 GameHub</h1>
+      <h1>🎮 <span>GameHub</span></h1>
     </div>
     <ul class="nav-links">
       <li><button class="nav-btn active" data-section="home-section">Home</button></li>
@@ -24,37 +25,37 @@
   <main id="main-content">
     <!-- Home Section -->
     <section id="home-section" class="section active">
-      <h2>Welcome to GameHub</h2>
-      <button id="google-login-btn">Login with Google</button>
-      <p id="login-message"></p>
+      <h2>Welcome to <span>GameHub</span></h2>
+      <button id="google-login-btn" class="btn-primary">Login with Google</button>
+      <p id="login-message" class="status-message"></p>
     </section>
 
     <!-- Registration Section -->
-    <section id="registration-section" class="section" style="display:none;">
+    <section id="registration-section" class="section">
       <h2>Complete Your Registration</h2>
-      <form id="registration-form">
+      <form id="registration-form" class="form">
         <label for="displayName">Display Name (your player name):</label>
         <input type="text" id="displayName" name="displayName" required maxlength="30" placeholder="Enter your display name" />
 
         <label for="age">Age:</label>
         <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
 
-        <button type="submit">Submit Registration</button>
+        <button type="submit" class="btn-primary">Submit Registration</button>
       </form>
-      <p id="registration-error" class="error"></p>
+      <p id="registration-error" class="error-message"></p>
     </section>
 
     <!-- Games Section -->
-    <section id="games-section" class="section" style="display:none;">
+    <section id="games-section" class="section">
       <h2>Choose a Game</h2>
       <div class="game-list">
-        <button onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
-        <button onclick="goToGame('AppleAttack/apple.html')">Apple Attack</button>
+        <button class="btn-game" onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
+        <button class="btn-game" onclick="goToGame('AppleAttack/apple.html')">Apple Attack</button>
       </div>
     </section>
 
     <!-- Leaderboard Section -->
-    <section id="leaderboard-section" class="section" style="display:none;">
+    <section id="leaderboard-section" class="section">
       <h2>Leaderboard</h2>
       <label for="game-select">Select Game:</label>
       <select id="game-select" onchange="updateLeaderboard()">
@@ -75,7 +76,7 @@
     </section>
 
     <!-- Profile Section -->
-    <section id="profile-section" class="section" style="display:none;">
+    <section id="profile-section" class="section">
       <h2>Your Profile</h2>
       <p><strong>Name:</strong> <span id="profile-name">Anonymous</span></p>
       <p><strong>Email:</strong> <span id="profile-email">Not logged in</span></p>
@@ -89,7 +90,7 @@
   <script src="firebase.mjs"></script>
 
   <script>
-    // Simple nav button toggle logic
+    // Nav button toggle logic
     const navButtons = document.querySelectorAll('.nav-btn');
     const sections = document.querySelectorAll('.section');
 
@@ -105,9 +106,30 @@
       });
     });
 
+    // Go to game with user check and localStorage save
+    function goToGame(path) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userData = {
+          uid: user.uid,
+          displayName: user.displayName || 'Anonymous',
+          email: user.email,
+          photoURL: user.photoURL || ''
+        };
+        localStorage.setItem("firebaseUser", JSON.stringify(userData));
+        window.location.href = path;
+      }
+    }
 
+    // Placeholder for leaderboard update function
+    function updateLeaderboard() {
+      const game = document.getElementById('game-select').value;
+      console.log(`Updating leaderboard for ${game}`);
+      // Actual leaderboard fetch & render logic goes here
+    }
   </script>
 
 </body>
 </html>
+
 
