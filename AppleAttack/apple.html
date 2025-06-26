@@ -9,22 +9,28 @@
   <meta name="author" content="Mio Hoffman" />
 
   <!-- P5.js & p5.play -->
+<!-- Load p5 core -->
+<head>
+  <!-- p5.js + p5play via script tags (no ES imports!) -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.4/lib/p5.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.4/lib/addons/p5.sound.min.js"></script>
   <script src="https://p5play.org/v3/planck.min.js"></script>
   <script src="https://p5play.org/v3/p5play.js"></script>
+</head>
+<body>
+  <script type="module" src="main.js"></script>
+</body>
 
-  <!-- Firebase SDK (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 
-  <!-- Your Firebase logic as ES module -->
-  <script type="module" src="firebaseutils.mjs"></script>
+  <!-- Firebase v10 compat CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <!-- Your Game Scripts -->
-  <script src="firebaseutils.js"></script>
-  <script src="main.js"></script>
+  <!-- Firebase Utils (as ES module) -->
+  <script type="module" src="../firebase.mjs"></script>
+
+  <!-- Your Game Script (also module!) -->
+  <script type="module" src="main.js"></script>
 
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
@@ -35,7 +41,6 @@
 
   <button id="start" onclick="runGame()">START</button>
   <button id="instructions" onclick="location.href='instructions.html'">Instructions</button>
-  <button id="save-score-btn">Save My Score</button>
   <button id="homeButton" onclick="location.href='/index.html'">Go Home</button>
 
   <!-- Game Over Screen -->
@@ -48,18 +53,8 @@
   <script>
     // Navigate back to main portal
     function goBack() {
-      window.location.href = "/index.html";
+      window.location.href = "./index.html";
     }
-
-    // Replace this with your actual game score variable when ready
-    // Save score button listener
-    document.getElementById('save-score-btn').addEventListener('click', () => {
-      if (typeof finalScore !== 'undefined' && finalScore !== null) {
-        saveAppleAttackScore(finalScore);
-      } else {
-        alert("No score to save yet!");
-      }
-    });
   </script>
 </body>
 </html>

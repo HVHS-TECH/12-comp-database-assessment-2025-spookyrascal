@@ -1,4 +1,4 @@
- :root {
+:root {
   --backgroundColor: #3b2a5f;
   --sidebarColor: #593d7a;
   --textColor: #e6d9f7;
@@ -14,11 +14,9 @@
 * {
   box-sizing: border-box;
   font-family: 'Figtree', sans-serif;
-  margin: 0; 
+  margin: 0;
   padding: 0;
   color: var(--textColor);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -34,8 +32,6 @@ nav#sidebar {
   display: flex;
   flex-direction: column;
   padding: 2rem 1.5rem;
-  box-sizing: border-box;
-  color: var(--textColor);
   box-shadow: 3px 0 15px var(--shadowColor);
 }
 
@@ -45,7 +41,6 @@ nav#sidebar .logo h1 {
   text-align: center;
   letter-spacing: 2px;
   text-shadow: 0 0 8px var(--highlightColor);
-  user-select: none;
 }
 
 nav#sidebar ul.nav-links {
@@ -56,7 +51,7 @@ nav#sidebar ul.nav-links {
   gap: 1.2rem;
 }
 
-nav#sidebar ul.nav-links button {
+.nav-links button {
   width: 100%;
   background-color: transparent;
   border: none;
@@ -67,29 +62,27 @@ nav#sidebar ul.nav-links button {
   text-align: left;
   border-radius: 12px;
   font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  box-shadow: inset 0 0 0 transparent;
+  transition: background-color 0.3s ease;
 }
 
-nav#sidebar ul.nav-links button:hover,
-nav#sidebar ul.nav-links button.active {
+.nav-links button:hover,
+.nav-links button.active {
   background-color: var(--highlightColor);
   color: #1a1a1a;
   font-weight: 700;
   box-shadow: 0 0 10px var(--highlightColor);
 }
 
-nav#sidebar ul.nav-links button#logout-btn {
+#logout-btn {
   margin-top: auto;
   background-color: var(--buttonBg);
   color: #000;
   font-weight: 700;
   border-radius: 14px;
   box-shadow: 0 0 15px var(--highlightColor);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-nav#sidebar ul.nav-links button#logout-btn:hover {
+#logout-btn:hover {
   background-color: var(--highlightHover);
   box-shadow: 0 0 20px var(--highlightHover);
 }
@@ -99,7 +92,6 @@ main#main-content {
   background-color: var(--cardBg);
   padding: 2.5rem 4rem;
   overflow-y: auto;
-  box-sizing: border-box;
   border-top-left-radius: 20px;
   box-shadow: inset 0 0 30px var(--shadowColor);
   display: flex;
@@ -115,17 +107,13 @@ section.section.active {
   display: block;
 }
 
-/* Headings */
 h2 {
   margin-bottom: 1.8rem;
   font-size: 2.3rem;
   color: var(--highlightColor);
   text-shadow: 0 0 12px var(--highlightColor);
-  user-select: none;
-  letter-spacing: 0.8px;
 }
 
-/* Buttons */
 button {
   background-color: var(--buttonBg);
   border: none;
@@ -154,8 +142,7 @@ form {
 }
 
 input[type="text"],
-input[type="number"],
-select {
+input[type="number"] {
   padding: 0.75rem 1rem;
   border-radius: 12px;
   border: none;
@@ -166,9 +153,7 @@ select {
   transition: background-color 0.3s ease;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-select:focus {
+input:focus {
   outline: none;
   background-color: var(--highlightHover);
   color: #000;
@@ -178,8 +163,12 @@ select:focus {
 label {
   font-weight: 600;
   margin-bottom: 0.4rem;
-  user-select: none;
-  letter-spacing: 0.3px;
+}
+
+.error {
+  color: #ff8a8a;
+  font-weight: 700;
+  margin-top: 0.6rem;
 }
 
 /* Game list buttons */
@@ -194,7 +183,6 @@ label {
   flex: 1 1 160px;
   font-size: 1.1rem;
   padding: 1rem;
-  box-shadow: 0 6px 15px var(--shadowColor);
   border-radius: 16px;
   transition: transform 0.2s ease;
 }
@@ -202,150 +190,94 @@ label {
 .game-list button:hover {
   transform: scale(1.05);
   background-color: var(--highlightHover);
-  box-shadow: 0 8px 25px var(--highlightHover);
   color: #000;
 }
 
-/* Leaderboard Section Container */
-#leaderboard-section {
-  background: linear-gradient(135deg, #6e4bd8, #a785f4);
-  padding: 2rem 2.5rem;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(167, 133, 244, 0.5);
-  max-width: 800px;
-  margin: 2rem auto;
-  color: #fff;
-  font-family: 'Figtree', sans-serif;
-}
-
-/* Section Title */
-#leaderboard-section h2 {
-  font-size: 2.6rem;
-  margin-bottom: 1.5rem;
+/* Game Over Overlay */
+#game-over-screen {
+  display: none;
   text-align: center;
-  letter-spacing: 1px;
-  text-shadow: 0 0 12px #c9b8ff;
-}
-
-/* Game select dropdown */
-#game-select {
-  display: block;
-  margin: 0 auto 2rem auto;
-  padding: 0.75rem 1.25rem;
-  font-size: 1.2rem;
-  border-radius: 12px;
-  border: none;
-  background-color: #7d58e4cc;
-  color: #fff;
-  box-shadow: 0 0 12px #a785f4;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#game-select:hover,
-#game-select:focus {
-  background-color: #c9b8ff;
-  color: #3b2a5f;
-  outline: none;
-  box-shadow: 0 0 20px #d6ccff;
-}
-
-/* Leaderboard table */
-#leaderboard-table {
+  color: white;
+  background: rgba(0, 0, 0, 0.85);
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #2e2152; /* deeper purple */
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(167, 133, 244, 0.4);
-  font-size: 1.15rem;
+  height: 100%;
+  padding-top: 150px;
+  font-family: 'Orbitron', sans-serif;
 }
 
-/* Table header */
-#leaderboard-table thead tr {
-  background: linear-gradient(90deg, #c9b8ff, #a785f4);
-  color: #3b2a5f;
-  font-weight: 800;
-  letter-spacing: 1px;
-  user-select: none;
+#game-over-screen h2 {
+  font-size: 48px;
+  margin-bottom: 20px;
 }
 
-/* Table cells */
-#leaderboard-table th,
-#leaderboard-table td {
-  padding: 15px 20px;
-  text-align: left;
-  border-bottom: 1px solid #593d7a;
+#game-over-screen p {
+  font-size: 32px;
+  margin-bottom: 40px;
 }
 
-/* Table rows */
-#leaderboard-table tbody tr {
-  background-color: #4c3a78;
-  transition: background-color 0.35s ease, transform 0.15s ease;
-  cursor: default;
+#game-over-screen button {
+  font-size: 24px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
-#leaderboard-table tbody tr:nth-child(even) {
-  background-color: #593d7a;
-}
-
-/* Row hover effect */
-#leaderboard-table tbody tr:hover {
-  background-color: #a785f4;
-  color: #3b2a5f;
-  font-weight: 700;
-  transform: scale(1.02);
-  box-shadow: 0 0 12px #d6ccff;
-}
-
-/* Rank styling - add subtle glow */
-#leaderboard-table tbody tr td:first-child {
-  font-weight: 700;
-  color: #d6ccff;
-  text-shadow: 0 0 5px #d6ccff;
-  width: 60px;
-}
-
-/* Player name styling */
-#leaderboard-table tbody tr td:nth-child(2) {
-  font-weight: 600;
-}
-
-/* Score cell alignment */
-#leaderboard-table tbody tr td:last-child {
-  text-align: right;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 6px #c9b8ff;
-}
-
-/* Responsive tweaks */
-@media (max-width: 640px) {
-  #leaderboard-section {
-    padding: 1.5rem 1rem;
-    max-width: 100%;
-  }
-
-  #leaderboard-table th,
-  #leaderboard-table td {
-    padding: 10px 12px;
-    font-size: 1rem;
-  }
-}
-
-/* Error text */
-.error,
-.error-message {
-  color: #ff8a8a;
-  font-weight: 700;
-  margin-top: 0.6rem;
-  user-select: none;
-}
-
-/* Subtle fade-in animation */
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+  #leaderboard-section {
+      background-color: #4c3a78;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(167, 133, 244, 0.4);
+    }
+
+    .leaderboard-controls {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 300px;
+    }
+
+    #game-select {
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      background-color: #6e4bd8;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #593d7a;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #leaderboard-table thead {
+      background-color: #a785f4;
+      color: #1a1a1a;
+    }
+
+    #leaderboard-table th, #leaderboard-table td {
+      padding: 1rem;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    #leaderboard-table tbody tr:nth-child(even) {
+      background-color: #4c3a78;
+    }
+
+    #leaderboard-table tbody tr:hover {
+      background-color: #6e4bd8;
+    }

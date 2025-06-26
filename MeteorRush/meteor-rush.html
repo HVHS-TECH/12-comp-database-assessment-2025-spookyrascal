@@ -4,20 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meteor Rush</title>
-  
+
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
-  
-  <!-- Firebase SDK (compat versions) -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  
-  <!-- Your CSS -->
   <link rel="stylesheet" href="/MeteorRush/meteor.css" />
-  
-  <!-- Your Firebase utils module -->
-  <script src="firebase-utils.mjs" type="module"></script>
 </head>
 <body>
   <!-- Start Screen -->
@@ -27,8 +17,8 @@
     <button class="instructions-btn">?</button>
   </div>
 
-  <!-- Game Canvas -->
-  <canvas id="gameCanvas"></canvas>
+  <!-- Game Canvas (hidden initially) -->
+  <canvas id="gameCanvas" style="display:none;"></canvas>
 
   <!-- Instructions Modal -->
   <div id="instructions-modal" class="modal" style="display:none;">
@@ -56,15 +46,24 @@
     <button onclick="goBack()" style="font-size: 24px; padding: 10px 20px; cursor: pointer;">Back to Portal</button>
   </div>
 
-  <!-- Your game logic -->
-  <script src="/MeteorRush/meteor.js"></script>
-
   <script>
     // Navigate back to main portal
     function goBack() {
       window.location.href = "/index.html";
     }
   </script>
+
+  <!-- Game Logic Module -->
+  <script type="module" src="./meteor.js"></script>
+
+  <script type="module">
+    import { onGameOver } from './meteor.js';
+    const playerScore = 123;
+    onGameOver(playerScore);
+  </script>
 </body>
 </html>
+
+
+
 

@@ -3,133 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Hub</title>
-  
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+  <title>Game Portal</title>
+  <meta name="description" content="12COMP Firebase Game Portal" />
+  <meta name="author" content="Carmen O'Grady" />
 
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet" />
+ 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+
+<body>
   <nav id="sidebar">
-    <div class="logo">
-      <h1>🎮 <span>GameHub</span></h1>
-    </div>
+    <div class="logo"><h1>🎮 Game Hub</h1></div>
     <ul class="nav-links">
-      <li><button class="nav-btn active" data-section="home-section">Home</button></li>
-      <li><button class="nav-btn" data-section="games-section">Games</button></li>
-      <li><button class="nav-btn" data-section="leaderboard-section">Leaderboard</button></li>
-      <li><button class="nav-btn" data-section="profile-section">Profile</button></li>
-      <li><button id="logout-btn" style="margin-top: auto;">Logout</button></li>
+      <li><button class="nav-btn active" data-section="home-section">🏠 Home</button></li>
+      <li><button class="nav-btn" data-section="registration-section">📝 Register</button></li>
+      <li><button class="nav-btn" data-section="games-section">🕹️ Games</button></li>
+      <li><button class="nav-btn" data-section="leaderboard-section">🏆 Leaderboard</button></li>
+      <li><button id="logout-btn">🚪 Logout</button></li>
     </ul>
   </nav>
 
   <main id="main-content">
-    <!-- Home Section -->
+    <!-- Home/Login -->
     <section id="home-section" class="section active">
-      <h2>Welcome to <span>GameHub</span></h2>
-      <button id="google-login-btn" class="btn-primary">Login with Google</button>
-      <p id="login-message" class="status-message"></p>
+      <h2>Welcome to the Game Portal!</h2>
+      <p>Sign in to access and compete in exciting games.</p>
+      <button id="google-login-btn">🔐 Sign in with Google</button>
+      <p id="login-message"></p>
     </section>
 
-    <!-- Registration Section -->
-    <section id="registration-section" class="section">
-      <h2>Complete Your Registration</h2>
-      <form id="registration-form" class="form">
-        <label for="displayName">Display Name (your player name):</label>
-        <input type="text" id="displayName" name="displayName" required maxlength="30" placeholder="Enter your display name" />
-
+    <!-- Registration -->
+    <section id="registration-section" class="section" hidden>
+      <h2>Create Your Gamer Tag</h2>
+      <form id="registration-form">
+        <label for="displayName">Display Name:</label>
+        <input type="text" id="displayName" required />
         <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required min="1" max="120" placeholder="Enter your age" />
-
-        <button type="submit" class="btn-primary">Submit Registration</button>
+        <input type="number" id="age" required />
+        <button type="submit">Register</button>
+        <p id="registration-error" class="error"></p>
       </form>
-      <p id="registration-error" class="error-message"></p>
     </section>
 
-    <!-- Games Section -->
-    <section id="games-section" class="section">
-      <h2>Choose a Game</h2>
+    <!-- Games -->
+    <section id="games-section" class="section" hidden>
+      <h2>🎮 Game Library</h2>
+      <p id="profile-name">Anonymous</p>
+      <p id="profile-email">Not logged in</p>
       <div class="game-list">
-        <button class="btn-game" onclick="goToGame('MeteorRush/meteor-rush.html')">Meteor Rush</button>
-        <button class="btn-game" onclick="goToGame('AppleAttack/apple.html')">Apple Attack</button>
+        <button onclick="goToGame('')">🧪 Under Development</button>
+        <button onclick="goToGame('MeteorRush/meteor-rush.html')">☄️ Meteor Rush</button>
+        <button onclick="goToGame('AppleAttack/apple.html')">🍎 Apple Attack</button>
       </div>
     </section>
 
-    <!-- Leaderboard Section -->
-    <section id="leaderboard-section" class="section">
-      <h2>Leaderboard</h2>
-      <label for="game-select">Select Game:</label>
-      <select id="game-select" onchange="updateLeaderboard()">
-        <option value="MeteorRush">Meteor Rush</option>
-        <option value="AppleAttack">Apple Attack</option>
-      </select>
-
-      <table id="leaderboard-table" aria-live="polite" role="table" tabindex="0">
+    <!-- Leaderboard -->
+    <section id="leaderboard-section" class="section" hidden>
+      <h2>🏆 Leaderboard</h2>
+      <div class="leaderboard-controls">
+        <label for="game-select">Select Game:</label>
+        <select id="game-select">
+          <option value="MeteorRush">☄️ Meteor Rush</option>
+          <option value="AppleAttack">🍎 Apple Attack</option>
+        </select>
+      </div>
+      <table id="leaderboard-table">
         <thead>
           <tr>
-            <th scope="col">Rank</th>
-            <th scope="col">Player</th>
-            <th scope="col">Score</th>
+            <th>🥇 Rank</th>
+            <th>🧑 Player</th>
+            <th>💯 Score</th>
           </tr>
         </thead>
-        <tbody id="leaderboard-body"></tbody>
+        <tbody id="leaderboard-body">
+          <tr><td colspan="3">Loading...</td></tr>
+        </tbody>
       </table>
-    </section>
-
-    <!-- Profile Section -->
-    <section id="profile-section" class="section">
-      <h2>Your Profile</h2>
-      <p><strong>Name:</strong> <span id="profile-name">Anonymous</span></p>
-      <p><strong>Email:</strong> <span id="profile-email">Not logged in</span></p>
     </section>
   </main>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  <script src="firebase.mjs"></script>
+  <!-- Game Over Overlay -->
+  <div id="game-over-screen" hidden>
+    <h2 id="game-over-message"></h2>
+    <p id="final-score"></p>
+    <button onclick="goBack()">🔙 Back to Portal</button>
+  </div>
 
   <script>
-    // Nav button toggle logic
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const sections = document.querySelectorAll('.section');
-
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.section;
-        sections.forEach(sec => {
-          sec.style.display = (sec.id === target) ? 'block' : 'none';
-          sec.classList.toggle('active', sec.id === target);
-        });
-      });
-    });
-
-    // Go to game with user check and localStorage save
-    function goToGame(path) {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const userData = {
-          uid: user.uid,
-          displayName: user.displayName || 'Anonymous',
-          email: user.email,
-          photoURL: user.photoURL || ''
-        };
-        localStorage.setItem("firebaseUser", JSON.stringify(userData));
-        window.location.href = path;
-      }
-    }
-
-    // Placeholder for leaderboard update function
-    function updateLeaderboard() {
-      const game = document.getElementById('game-select').value;
-      console.log(`Updating leaderboard for ${game}`);
-      // Actual leaderboard fetch & render logic goes here
+    function goBack() {
+      window.location.href = './index.html';
     }
   </script>
 
+  <!-- Modules -->
+  <script type="module" src="./firebase.mjs"></script>
+  <script type="module" src="./leaderboard.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module">
+    import { updateLeaderboard } from './leaderboard.js';
+
+    const gameSelect = document.getElementById('game-select');
+    gameSelect.addEventListener('change', () => updateLeaderboard());
+
+    // Load initial leaderboard
+    updateLeaderboard();
+  </script>
 </body>
 </html>
-
 
