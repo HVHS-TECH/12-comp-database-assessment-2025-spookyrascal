@@ -1,6 +1,6 @@
 // leaderboard.js
 import { fb_writeRec, fb_getTopScores } from './firebase.mjs';
-import { signOutUser } from '../firebase.mjs';
+import { signOutUser } from './firebase.mjs';
 
 // Safely get DOM elements
 function getLeaderboardBody() {
@@ -55,6 +55,12 @@ export async function updateLeaderboard() {
     // Populate table
     mergedScores.slice(0, 10).forEach((entry, index) => {
       const tr = document.createElement('tr');
+      let className = '';
+      if (index === 0) className = 'first-place';
+      else if (index === 1) className = 'second-place';
+      else if (index === 2) className = 'third-place';
+
+      tr.className = className;
       tr.innerHTML = `
         <td>${index + 1}</td>
         <td>${escapeHtml(entry.name)}</td>

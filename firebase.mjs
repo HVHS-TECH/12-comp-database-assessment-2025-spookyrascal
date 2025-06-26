@@ -104,7 +104,6 @@ async function saveUserGameData(uid, data) {
   await set(userRef, data);
 }
 
-// ✅ FIXED: Complete exports
 export {
   auth,
   provider,

@@ -5,7 +5,8 @@ import {
   signOut,
   fb_writeRec,
   getUserGameData,
-  saveUserGameData
+  saveUserGameData,
+  signOutUser
 } from '../firebase.mjs';
 
 // ---------- UI Helpers ----------
