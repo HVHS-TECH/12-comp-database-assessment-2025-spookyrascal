@@ -5,8 +5,9 @@ import {
   signOut,
   fb_writeRec,
   getUserGameData,
-  saveUserGameData
-} from './firebase.mjs';
+  saveUserGameData,
+  signOutUser
+} from '../firebase.mjs';
 
 // ---------- UI Helpers ----------
 function showSection(sectionId) {
