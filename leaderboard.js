@@ -1,6 +1,5 @@
 // leaderboard.js
 import { fb_writeRec, fb_getTopScores } from './firebase.mjs';
-import { signOutUser } from './firebase.mjs';
 
 // Safely get DOM elements
 function getLeaderboardBody() {

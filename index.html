@@ -7,6 +7,9 @@
   <meta name="description" content="12COMP Firebase Game Portal" />
   <meta name="author" content="Carmen O'Grady" />
 
+  <!-- IMPORTANT: Base URL for resolving relative links -->
+  <base href="/12COMP-2025-carmen-ogrady/" />
+
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -96,10 +99,10 @@
   </div>
 
   <!-- Modules -->
-<script type="module" src="./firebase.mjs"></script>
-<script type="module" src="./leaderboard.js"></script>
-<script type="module" src="./main.js"></script>
-<script type="module">
+  <script type="module" src="./firebase.mjs"></script>
+  <script type="module" src="./leaderboard.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module">
     import { updateLeaderboard } from './leaderboard.js';
 
     const gameSelect = document.getElementById('game-select');
@@ -107,6 +110,20 @@
 
     // Load initial leaderboard
     updateLeaderboard();
+
+    function goBack() {
+      window.location.href = './index.html';
+    }
+
+    window.goToGame = function(path) {
+      const userData = JSON.parse(localStorage.getItem("firebaseUser"));
+      if (!userData) {
+        alert("⚠️ Please log in to play!");
+        return;
+      }
+      localStorage.setItem("firebaseUser", JSON.stringify(userData));
+      window.location.href = path;
+    }
   </script>
 </body>
 </html>
