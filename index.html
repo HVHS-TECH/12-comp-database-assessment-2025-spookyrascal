@@ -57,8 +57,9 @@
       <p id="profile-name">Anonymous</p>
       <p id="profile-email">Not logged in</p>
       <div class="game-list">
+        <button onclick="goToGame('')">🧪 Feedback Form</button>
         <button onclick="goToGame('MeteorRush/meteor-rush.html')">☄️ Meteor Rush</button>
-        <button onclick="goToGame('')">🍎 Apple Attack</button>
+        <button onclick="goToGame('AppleAttack/apple.html')">🍎 Apple Attack</button>
       </div>
     </section>
 
@@ -104,7 +105,7 @@
   <script type="module" src="./firebase.mjs"></script>
   <script type="module" src="./leaderboard.js"></script>
   <script type="module" src="./main.js"></script>
-  <script type="module">
+<script type="module">
     import { updateLeaderboard } from './leaderboard.js';
 
     const gameSelect = document.getElementById('game-select');
