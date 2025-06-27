@@ -7,7 +7,8 @@ import {
   getUserGameData,
   saveUserGameData,
   signOutUser
-} from 'firebase.mjs';
+} from './firebase.mjs';
+
 
 // ---------- UI Helpers ----------
 function showSection(sectionId) {
